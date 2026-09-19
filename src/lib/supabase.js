@@ -112,7 +112,7 @@ export async function fetchUserProfile() {
  */
 export async function recordAiUsageLog({
   problemId = null,
-  model = 'gemini-2.5-flash',
+  model = 'gemini-3.6-flash',
   inputType = 'text',
   promptTokens = 0,
   candidatesTokens = 0,

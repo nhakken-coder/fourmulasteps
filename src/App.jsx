@@ -10,7 +10,7 @@ import {
   FOURMULA_STEPS_RESPONSE_SCHEMA 
 } from './prompts/fourmulaStepsPrompt';
 import { MATH_FORMULAS, findFormulaInCollection } from './data/mathFormulas';
-import { GEMINI_API_KEY } from './config';
+import { GEMINI_API_KEY, GEMINI_MODEL } from './config';
 import { 
   isSupabaseConfigured, 
   saveProblemToSupabase, 
@@ -510,7 +510,7 @@ export default function FourmulaStepsApp() {
         }
 
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: GEMINI_MODEL,
           contents: contents,
           config: {
             systemInstruction: FOURMULA_STEPS_SYSTEM_INSTRUCTION,
@@ -758,7 +758,7 @@ export default function FourmulaStepsApp() {
       // AI使用履歴・トークン消費・推定コストを記録
       recordAiUsageLog({
         problemId: newId,
-        model: 'gemini-2.5-flash',
+        model: GEMINI_MODEL,
         inputType: inputMode,
         promptTokens,
         candidatesTokens,
@@ -1763,7 +1763,7 @@ export default function FourmulaStepsApp() {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <History className="w-4 h-4 text-cyan-400" />
-                    AI使用履歴 & コスト明細（Gemini 2.5 Flash）
+                    AI使用履歴 & コスト明細（Gemini 3.6 Flash）
                   </h3>
                   <span className="text-[11px] text-slate-400 font-mono">
                     入力 $0.075 / 出力 $0.30 (100万tok換算)

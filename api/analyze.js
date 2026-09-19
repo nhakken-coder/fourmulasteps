@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
     const startTime = Date.now();
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: process.env.VITE_GEMINI_MODEL || 'gemini-3.6-flash',
       contents,
       config: {
         systemInstruction: FOURMULA_STEPS_SYSTEM_INSTRUCTION,
