@@ -11,6 +11,7 @@ import {
 } from './prompts/fourmulaStepsPrompt';
 import { MATH_FORMULAS, findFormulaInCollection } from './data/mathFormulas';
 import { GEMINI_API_KEY, GEMINI_MODEL } from './config';
+import LandingPage from './components/LandingPage';
 import { 
   isSupabaseConfigured, 
   saveProblemToSupabase, 
@@ -188,6 +189,12 @@ const initialProblems = [
 ];
 
 export default function FourmulaStepsApp() {
+  const [viewMode, setViewMode] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#app') {
+      return 'app';
+    }
+    return 'lp';
+  });
   const [activeTab, setActiveTab] = useState('solve');
   const [problems, setProblems] = useState(initialProblems);
   const [selectedProblemId, setSelectedProblemId] = useState(1);
@@ -293,6 +300,20 @@ export default function FourmulaStepsApp() {
 
     loadInitialData();
     return () => { isMounted = false; };
+  }, []);
+
+  // URLハッシュ（#app / #lp）の監視
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (typeof window === 'undefined') return;
+      if (window.location.hash === '#app') {
+        setViewMode('app');
+      } else if (window.location.hash === '#lp' || window.location.hash === '') {
+        setViewMode('lp');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const currentProblem = problems.find(p => p.id === selectedProblemId) || problems[0];
@@ -436,7 +457,7 @@ export default function FourmulaStepsApp() {
   const handleAnalyze = async () => {
     const cleanApiKey = getEffectiveApiKey();
     if (!cleanApiKey) {
-      setErrorMsg('Gemini API キーが設定されていません。src/config.js または .env ファイルに API キーを記述してください。');
+      setErrorMsg('AI解析に必要な API キーが設定されていません。src/config.js または .env ファイルに API キーを記述してください。');
       return;
     }
 
@@ -799,23 +820,61 @@ export default function FourmulaStepsApp() {
 
   const analysisStats = calculateAnalysis();
 
+  if (viewMode === 'lp') {
+    return (
+      <LandingPage
+        onLaunchApp={() => {
+          setViewMode('app');
+          if (typeof window !== 'undefined') {
+            window.location.hash = '#app';
+            window.scrollTo(0, 0);
+          }
+        }}
+        onOpenFormulas={() => {
+          setViewMode('app');
+          setActiveTab('formulas');
+          if (typeof window !== 'undefined') {
+            window.location.hash = '#app';
+            window.scrollTo(0, 0);
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 md:p-8 pb-24">
       <header className="max-w-5xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="bg-indigo-600 text-white font-black px-2 py-1 rounded text-sm tracking-wider">4STEPS</span>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              fourmulasteps
-            </h1>
-            {isSupabaseConfigured && (
-              <span className="text-[10px] text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                クラウド同期
-              </span>
-            )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setViewMode('lp');
+              if (typeof window !== 'undefined') {
+                window.location.hash = '#lp';
+                window.scrollTo(0, 0);
+              }
+            }}
+            className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-750 border border-slate-700/80 rounded-lg transition flex items-center gap-1.5 shadow-sm shrink-0"
+            title="公式紹介LPページへ戻る"
+          >
+            <span>←</span>
+            <span>公式LPへ</span>
+          </button>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="bg-indigo-600 text-white font-black px-2 py-1 rounded text-sm tracking-wider">4STEPS</span>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                fourmulasteps
+              </h1>
+              {isSupabaseConfigured && (
+                <span className="text-[10px] text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                  クラウド同期
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-1">難関大数学 ゴール逆算型 思考プロセス体系化アプリ</p>
           </div>
-          <p className="text-xs text-slate-400 mt-1">難関大数学 ゴール逆算型 思考プロセス体系化アプリ</p>
         </div>
 
         <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs sm:text-sm flex-wrap">
@@ -867,7 +926,7 @@ export default function FourmulaStepsApp() {
             }`}
           >
             <BarChart2 className="w-4 h-4 text-cyan-400" />
-            学習分析・利用履歴
+            学習・弱点分析
           </button>
         </div>
       </header>
