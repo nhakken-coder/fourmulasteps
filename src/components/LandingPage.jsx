@@ -24,36 +24,41 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
   const [showComparisonTable, setShowComparisonTable] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState('register'); // 'register' | 'login'
-  const [pendingAction, setPendingAction] = useState(null); // 'app' | 'subscribe-standard' | 'subscribe-premium'
+  const [authModalMode, setAuthModalMode] = useState('register'); // 'register' | 'login' | 'checkout'
+  const [selectedPlanForAuth, setSelectedPlanForAuth] = useState(null); // { tier, cycle }
 
   // 無料体験ボタン押下時: 登録済みならアプリへ、未登録なら無料会員登録モーダルを表示
   const handleFreeExperience = () => {
+    setSelectedPlanForAuth(null);
     if (user?.email) {
       onLaunchApp();
     } else {
       setAuthModalMode('register');
-      setPendingAction('app');
       setShowAuthModal(true);
     }
   };
 
   // ログインボタン押下時
   const handleLoginClick = () => {
+    setSelectedPlanForAuth(null);
     setAuthModalMode('login');
-    setPendingAction('app');
     setShowAuthModal(true);
   };
 
   // 有料プラン申し込み時
   const handleSubscribe = async (tier) => {
     if (!user?.email) {
-      setAuthModalMode('register');
-      setPendingAction(`subscribe-${tier}`);
+      // 未ログインの場合は、有料プラン専用の会員登録＆決済直結モーダルを開く
+      setSelectedPlanForAuth({
+        tier,
+        cycle: billingCycle
+      });
+      setAuthModalMode('checkout');
       setShowAuthModal(true);
       return;
     }
 
+    // 既にログイン済みの場合はそのままStripe決済画面へ
     setIsCheckingOut(true);
     try {
       await redirectToCheckout({
@@ -68,15 +73,16 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
   };
 
   // 認証完了後の処理
-  const handleAuthSuccess = async (authUser) => {
+  const handleAuthSuccess = async (authUser, plan) => {
     setShowAuthModal(false);
-    if (pendingAction === 'subscribe-standard' || pendingAction === 'subscribe-premium') {
-      const tier = pendingAction.split('-')[1];
+    const targetPlan = plan || selectedPlanForAuth;
+    if (targetPlan) {
+      // 有料プランの場合、即座にStripe決済画面へリダイレクト
       setIsCheckingOut(true);
       try {
         await redirectToCheckout({
-          tier,
-          cycle: billingCycle,
+          tier: targetPlan.tier,
+          cycle: targetPlan.cycle,
           userId: authUser?.id,
           userEmail: authUser?.email
         });
@@ -84,6 +90,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
         setIsCheckingOut(false);
       }
     } else {
+      // 無料会員登録・通常ログインの場合、そのままアプリへ
       onLaunchApp(authUser);
     }
   };
@@ -1060,11 +1067,15 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
         </div>
       </footer>
 
-      {/* 無料会員登録・ログイン用モーダル */}
+      {/* 会員登録・ログイン・有料決済直結モーダル */}
       <AuthModal
         isOpen={showAuthModal}
         initialMode={authModalMode}
-        onClose={() => setShowAuthModal(false)}
+        selectedPlan={selectedPlanForAuth}
+        onClose={() => {
+          setShowAuthModal(false);
+          setSelectedPlanForAuth(null);
+        }}
         onSuccess={handleAuthSuccess}
       />
     </div>

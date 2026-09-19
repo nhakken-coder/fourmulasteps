@@ -273,6 +273,8 @@ export default function FourmulaStepsApp() {
   const [userProfile, setUserProfile] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [paymentNotice, setPaymentNotice] = useState(null); // { message, plan }
+
   // 認証状態の監視
   useEffect(() => {
     getCurrentUser().then(user => {
@@ -287,6 +289,33 @@ export default function FourmulaStepsApp() {
         }
       });
       return () => subscription.unsubscribe();
+    }
+  }, []);
+
+  // 決済完了（payment=success）の検出
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment') === 'success') {
+      setViewMode('app');
+      window.location.hash = '#app';
+      setPaymentNotice('有料プランのお支払いが完了しました！アプリをお楽しみください。');
+
+      // WebhookによるSupabaseプロファイル反映をリフレッシュ（即時＋2秒後）
+      fetchUserProfile().then(p => p && setUserProfile(p));
+      const timer = setTimeout(() => {
+        fetchUserProfile().then(p => p && setUserProfile(p));
+      }, 2500);
+
+      // URLクエリをクリーンアップ
+      try {
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      } catch (e) {
+        // ignore
+      }
+
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -981,7 +1010,30 @@ export default function FourmulaStepsApp() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto">
+      <main className="max-w-5xl mx-auto space-y-6">
+        {/* 決済成功ウェルカムバナー */}
+        {paymentNotice && (
+          <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/90 via-slate-900 to-indigo-950/90 border border-emerald-500/60 shadow-xl flex items-center justify-between gap-3 animate-in fade-in duration-300">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">{paymentNotice}</p>
+                <p className="text-xs text-slate-300">
+                  会員ステータス：{userProfile?.plan === 'premium' ? 'プレミアム会員（月300問）' : '一般会員（月100問）'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setPaymentNotice(null)}
+              className="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+            >
+              閉じる
+            </button>
+          </div>
+        )}
+
         {activeTab === 'solve' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">

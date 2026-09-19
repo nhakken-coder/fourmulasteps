@@ -40,8 +40,8 @@ export default async function handler(req, res) {
         },
       ],
       mode: 'subscription',
-      success_url: `${origin}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}?payment=cancelled`,
+      success_url: `${origin}?payment=success&session_id={CHECKOUT_SESSION_ID}#app`,
+      cancel_url: `${origin}?payment=cancelled#pricing`,
       client_reference_id: userId || undefined,
       customer_email: userEmail || undefined,
       metadata: {
