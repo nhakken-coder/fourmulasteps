@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'priceId is required' });
     }
 
-    const origin = returnUrl || req.headers.origin || 'https://fourmulasteps.vercel.app';
+    const origin = returnUrl || req.headers.origin || 'https://fourmulasteps-app.vercel.app';
 
     // Stripe Checkout Session の作成
     const session = await stripe.checkout.sessions.create({

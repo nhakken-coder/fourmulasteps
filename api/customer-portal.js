@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'customerId is required' });
     }
 
-    const origin = returnUrl || req.headers.origin || 'https://fourmulasteps.vercel.app';
+    const origin = returnUrl || req.headers.origin || 'https://fourmulasteps-app.vercel.app';
 
     // Stripe Customer Portal Session の作成
     const portalSession = await stripe.billingPortal.sessions.create({
