@@ -29,6 +29,70 @@ export function usdToJpy(usd = 0) {
 }
 
 /**
+ * 現在のログインユーザーを取得（セッションのみ確認、匿名自動ログインは行わない）
+ */
+export async function getCurrentUser() {
+  if (!supabase) return null;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user || null;
+  } catch (err) {
+    console.warn('getCurrentUser error:', err);
+    return null;
+  }
+}
+
+/**
+ * メールアドレスとパスワードで新規会員登録（無料体験）
+ */
+export async function signUpWithEmail(email, password, displayName = '受験生') {
+  if (!supabase) throw new Error('Supabaseが設定されていません');
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: displayName
+      }
+    }
+  });
+
+  if (error) throw error;
+  if (data?.user) {
+    await ensureProfile(data.user, displayName);
+  }
+  return data;
+}
+
+/**
+ * メールアドレスとパスワードでログイン
+ */
+export async function signInWithEmail(email, password) {
+  if (!supabase) throw new Error('Supabaseが設定されていません');
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) throw error;
+  if (data?.user) {
+    await ensureProfile(data.user);
+  }
+  return data;
+}
+
+/**
+ * ログアウト
+ */
+export async function signOutUser() {
+  if (!supabase) return;
+  const { error } = await supabase.auth.signOut();
+  if (error) console.warn('signOut error:', error.message);
+}
+
+/**
  * ユーザーセッションを取得、未認証の場合は匿名ログインを実行
  */
 export async function getOrCreateUser() {
@@ -59,7 +123,7 @@ export async function getOrCreateUser() {
 /**
  * プロファイル行が存在することを確認し、なければ新規作成
  */
-async function ensureProfile(user) {
+async function ensureProfile(user, displayName = '受験生') {
   if (!supabase || !user) return;
   try {
     const { data } = await supabase
@@ -72,7 +136,7 @@ async function ensureProfile(user) {
       await supabase.from('profiles').insert({
         id: user.id,
         email: user.email || 'guest@fourmulasteps.app',
-        display_name: '受験生',
+        display_name: displayName || user.user_metadata?.full_name || '受験生',
         last_active_at: new Date().toISOString()
       });
     }

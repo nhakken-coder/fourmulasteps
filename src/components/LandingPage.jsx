@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { redirectToCheckout } from '../lib/stripeClient';
+import AuthModal from './AuthModal';
 
 export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
@@ -22,8 +23,37 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
   const [showComparisonTable, setShowComparisonTable] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('register'); // 'register' | 'login'
+  const [pendingAction, setPendingAction] = useState(null); // 'app' | 'subscribe-standard' | 'subscribe-premium'
 
+  // 無料体験ボタン押下時: 登録済みならアプリへ、未登録なら無料会員登録モーダルを表示
+  const handleFreeExperience = () => {
+    if (user?.email) {
+      onLaunchApp();
+    } else {
+      setAuthModalMode('register');
+      setPendingAction('app');
+      setShowAuthModal(true);
+    }
+  };
+
+  // ログインボタン押下時
+  const handleLoginClick = () => {
+    setAuthModalMode('login');
+    setPendingAction('app');
+    setShowAuthModal(true);
+  };
+
+  // 有料プラン申し込み時
   const handleSubscribe = async (tier) => {
+    if (!user?.email) {
+      setAuthModalMode('register');
+      setPendingAction(`subscribe-${tier}`);
+      setShowAuthModal(true);
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
       await redirectToCheckout({
@@ -34,6 +64,27 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
       });
     } finally {
       setIsCheckingOut(false);
+    }
+  };
+
+  // 認証完了後の処理
+  const handleAuthSuccess = async (authUser) => {
+    setShowAuthModal(false);
+    if (pendingAction === 'subscribe-standard' || pendingAction === 'subscribe-premium') {
+      const tier = pendingAction.split('-')[1];
+      setIsCheckingOut(true);
+      try {
+        await redirectToCheckout({
+          tier,
+          cycle: billingCycle,
+          userId: authUser?.id,
+          userEmail: authUser?.email
+        });
+      } finally {
+        setIsCheckingOut(false);
+      }
+    } else {
+      onLaunchApp(authUser);
     }
   };
 
@@ -114,13 +165,41 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
             <a href="#faq" className="hover:text-slate-900 transition">Q&A</a>
           </nav>
 
-          <button
-            onClick={onLaunchApp}
-            className="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5"
-          >
-            <span>アプリを始める</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2.5">
+            {user?.email ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 hidden sm:inline">
+                  {user.user_metadata?.full_name || user.email}
+                </span>
+                <button
+                  type="button"
+                  onClick={onLaunchApp}
+                  className="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5"
+                >
+                  <span>アプリを開く</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleLoginClick}
+                  className="px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
+                >
+                  ログイン
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFreeExperience}
+                  className="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-sm transition active:scale-95 flex items-center gap-1.5"
+                >
+                  <span>無料で体験</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -154,7 +233,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
                 <button
-                  onClick={onLaunchApp}
+                  type="button"
+                  onClick={handleFreeExperience}
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm sm:text-base font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-md shadow-[#D9532F]/20 transition active:scale-95"
                 >
                   <Sparkles className="w-4 h-4 text-orange-200" />
@@ -162,6 +242,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={onOpenFormulas}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 border border-[#DDD6CA] rounded-xl shadow-xs transition"
                 >
@@ -171,7 +252,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
               </div>
 
               <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-slate-500 font-medium">
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 登録不要ですぐ利用可</span>
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 無料会員登録ですぐ体験（クレカ不要・月3問）</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> スマホ撮影・手書き対応</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 高校数学全範囲（数ⅠA〜ⅢC）</span>
               </div>
@@ -248,7 +329,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     </p>
                   </div>
                   <button
-                    onClick={onLaunchApp}
+                    type="button"
+                    onClick={handleFreeExperience}
                     className="shrink-0 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-white border border-indigo-200 px-2.5 py-1 rounded-lg shadow-xs"
                   >
                     解く →
@@ -636,7 +718,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
 
               <div className="mt-8 pt-4">
                 <button
-                  onClick={onLaunchApp}
+                  type="button"
+                  onClick={handleFreeExperience}
                   className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition"
                 >
                   無料で体験してみる
@@ -941,7 +1024,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
           </p>
 
           <button
-            onClick={onLaunchApp}
+            type="button"
+            onClick={handleFreeExperience}
             className="inline-flex items-center justify-center gap-2.5 px-9 py-4 text-base font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-2xl shadow-[#D9532F]/40 transition transform hover:-translate-y-0.5 active:scale-95"
           >
             <Sparkles className="w-5 h-5 text-orange-200" />
@@ -965,12 +1049,24 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
             <a href="#features" className="hover:text-white transition">機能</a>
             <a href="#pricing" className="hover:text-white transition">料金プラン</a>
             <a href="#faq" className="hover:text-white transition">Q&A</a>
-            <button onClick={onLaunchApp} className="text-[#D9532F] hover:underline font-bold">
+            <button 
+              type="button"
+              onClick={handleFreeExperience} 
+              className="text-[#D9532F] hover:underline font-bold"
+            >
               アプリを起動
             </button>
           </div>
         </div>
       </footer>
+
+      {/* 無料会員登録・ログイン用モーダル */}
+      <AuthModal
+        isOpen={showAuthModal}
+        initialMode={authModalMode}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

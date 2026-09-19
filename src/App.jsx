@@ -13,6 +13,7 @@ import { MATH_FORMULAS, findFormulaInCollection } from './data/mathFormulas';
 import { GEMINI_API_KEY, GEMINI_MODEL } from './config';
 import LandingPage from './components/LandingPage';
 import { 
+  supabase,
   isSupabaseConfigured, 
   saveProblemToSupabase, 
   fetchProblemsFromSupabase, 
@@ -20,7 +21,9 @@ import {
   fetchStepLogsFromSupabase,
   recordAiUsageLog,
   recordWeaknessLog,
-  fetchUserProfile
+  fetchUserProfile,
+  getCurrentUser,
+  signOutUser
 } from './lib/supabase';
 import { 
   ChevronDown, 
@@ -42,7 +45,9 @@ import {
   Search,
   Library,
   X,
-  PlusCircle
+  PlusCircle,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 
 const MathText = ({ text }) => {
@@ -266,6 +271,24 @@ export default function FourmulaStepsApp() {
   });
 
   const [userProfile, setUserProfile] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // 認証状態の監視
+  useEffect(() => {
+    getCurrentUser().then(user => {
+      if (user) setCurrentUser(user);
+    });
+
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setCurrentUser(session?.user || null);
+        if (session?.user) {
+          fetchUserProfile().then(p => p && setUserProfile(p));
+        }
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, []);
 
   // 問題データ、ステップログ、プロファイルを同期・ロード
   useEffect(() => {
@@ -823,7 +846,9 @@ export default function FourmulaStepsApp() {
   if (viewMode === 'lp') {
     return (
       <LandingPage
-        onLaunchApp={() => {
+        user={currentUser}
+        onLaunchApp={(authUser) => {
+          if (authUser) setCurrentUser(authUser);
           setViewMode('app');
           if (typeof window !== 'undefined') {
             window.location.hash = '#app';
@@ -876,6 +901,31 @@ export default function FourmulaStepsApp() {
             <p className="text-xs text-slate-400 mt-1">難関大数学 ゴール逆算型 思考プロセス体系化アプリ</p>
           </div>
         </div>
+
+        {/* ログインユーザー情報・ログアウト */}
+        {currentUser?.email ? (
+          <div className="flex items-center gap-2 self-end sm:self-center bg-slate-800/80 border border-slate-700/80 px-2.5 py-1 rounded-lg text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span className="text-slate-300 font-medium">
+              {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 font-bold">
+              {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
+            </span>
+            <button
+              onClick={async () => {
+                await signOutUser();
+                setCurrentUser(null);
+                setUserProfile(null);
+                setViewMode('lp');
+              }}
+              title="ログアウトしてLPに戻る"
+              className="text-slate-400 hover:text-rose-400 p-1 ml-1 rounded transition"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : null}
 
         <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs sm:text-sm flex-wrap">
           <button
