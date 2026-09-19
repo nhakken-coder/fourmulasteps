@@ -19,10 +19,7 @@ import {
   fetchStepLogsFromSupabase,
   recordAiUsageLog,
   recordWeaknessLog,
-  fetchUserProfile,
-  fetchAiUsageHistory,
-  calculateGeminiCost,
-  usdToJpy
+  fetchUserProfile
 } from './lib/supabase';
 import { 
   ChevronDown, 
@@ -44,9 +41,6 @@ import {
   Search,
   Library,
   X,
-  DollarSign,
-  History,
-  Cpu,
   PlusCircle
 } from 'lucide-react';
 
@@ -265,18 +259,16 @@ export default function FourmulaStepsApp() {
   });
 
   const [userProfile, setUserProfile] = useState(null);
-  const [aiHistory, setAiHistory] = useState([]);
 
-  // 問題データ、ステップログ、プロファイル、AI使用履歴を同期・ロード
+  // 問題データ、ステップログ、プロファイルを同期・ロード
   useEffect(() => {
     let isMounted = true;
     const loadInitialData = async () => {
       try {
-        const [remoteProblems, remoteLogs, profile, history] = await Promise.all([
+        const [remoteProblems, remoteLogs, profile] = await Promise.all([
           fetchProblemsFromSupabase(),
           fetchStepLogsFromSupabase(),
-          fetchUserProfile(),
-          fetchAiUsageHistory()
+          fetchUserProfile()
         ]);
         if (!isMounted) return;
 
@@ -294,7 +286,6 @@ export default function FourmulaStepsApp() {
           }));
         }
         if (profile) setUserProfile(profile);
-        if (history && history.length > 0) setAiHistory(history);
       } catch (err) {
         console.warn('Initial data load error:', err);
       }
@@ -765,7 +756,6 @@ export default function FourmulaStepsApp() {
         latencyMs,
         status: 'success'
       }).then(() => {
-        fetchAiUsageHistory().then(h => h && setAiHistory(h));
         fetchUserProfile().then(p => p && setUserProfile(p));
       });
 
@@ -1706,115 +1696,40 @@ export default function FourmulaStepsApp() {
         {activeTab === 'analysis' && (() => {
           const totalAnalyzed = userProfile?.total_problems_analyzed ?? problems.filter(p => p.difficulty === 'AI解析').length;
           const totalPracticed = userProfile?.total_steps_practiced ?? Object.values(userLogs).reduce((acc, log) => acc + Object.keys(log).length, 0);
-          const totalCostUsd = Number(userProfile?.total_ai_cost_usd ?? aiHistory.reduce((acc, h) => acc + (h.estimatedCostUsd || 0), 0));
-          const totalCostJpy = usdToJpy(totalCostUsd);
-          const totalTokens = userProfile?.total_tokens_used ?? aiHistory.reduce((acc, h) => acc + (h.totalTokens || 0), 0);
 
           return (
             <div className="space-y-6">
               {/* ユーザー学習ステータス & 利用サマリーカード */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-800/90 p-4 rounded-xl border border-slate-700/80 shadow">
-                  <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold mb-1">
-                    <Sparkles className="w-4 h-4" />
-                    <span>AI解析問題数</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-800/90 p-5 rounded-xl border border-slate-700/80 shadow flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold mb-1">
+                      <Sparkles className="w-4 h-4" />
+                      <span>AI解析問題数</span>
+                    </div>
+                    <div className="text-3xl font-black text-white font-mono">
+                      {totalAnalyzed} <span className="text-sm font-normal text-slate-400">問</span>
+                    </div>
                   </div>
-                  <div className="text-2xl font-black text-white font-mono">
-                    {totalAnalyzed} <span className="text-xs font-normal text-slate-400">問</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/90 p-4 rounded-xl border border-slate-700/80 shadow">
-                  <div className="flex items-center gap-2 text-cyan-400 text-xs font-semibold mb-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>演習ステップ数</span>
-                  </div>
-                  <div className="text-2xl font-black text-white font-mono">
-                    {totalPracticed} <span className="text-xs font-normal text-slate-400">回</span>
+                  <div className="w-12 h-12 rounded-xl bg-indigo-950/60 border border-indigo-800/50 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-indigo-400" />
                   </div>
                 </div>
 
-                <div className="bg-slate-800/90 p-4 rounded-xl border border-slate-700/80 shadow">
-                  <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold mb-1">
-                    <Cpu className="w-4 h-4" />
-                    <span>消費トークン</span>
+                <div className="bg-slate-800/90 p-5 rounded-xl border border-slate-700/80 shadow flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-cyan-400 text-xs font-semibold mb-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>演習ステップ数</span>
+                    </div>
+                    <div className="text-3xl font-black text-white font-mono">
+                      {totalPracticed} <span className="text-sm font-normal text-slate-400">回</span>
+                    </div>
                   </div>
-                  <div className="text-2xl font-black text-white font-mono">
-                    {totalTokens.toLocaleString()} <span className="text-xs font-normal text-slate-400">tok</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/90 p-4 rounded-xl border border-slate-700/80 shadow">
-                  <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold mb-1">
-                    <DollarSign className="w-4 h-4" />
-                    <span>推定AIコスト</span>
-                  </div>
-                  <div className="text-2xl font-black text-emerald-300 font-mono">
-                    ${totalCostUsd.toFixed(4)}
-                  </div>
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    約 ¥{totalCostJpy.toFixed(2)}
+                  <div className="w-12 h-12 rounded-xl bg-cyan-950/60 border border-cyan-800/50 flex items-center justify-center">
+                    <CheckCircle2 className="w-6 h-6 text-cyan-400" />
                   </div>
                 </div>
-              </div>
-
-              {/* AI使用履歴 & コスト追跡セクション */}
-              <div className="bg-slate-800 rounded-xl p-5 border border-slate-700 shadow-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <History className="w-4 h-4 text-cyan-400" />
-                    AI使用履歴 & コスト明細（Gemini 3.6 Flash）
-                  </h3>
-                  <span className="text-[11px] text-slate-400 font-mono">
-                    入力 $0.075 / 出力 $0.30 (100万tok換算)
-                  </span>
-                </div>
-
-                {aiHistory.length === 0 ? (
-                  <div className="p-4 text-center text-xs text-slate-500 bg-slate-900/50 rounded-lg border border-slate-800">
-                    まだAI利用履歴がありません。「写真/テキスト解析」を実行するとトークンとコストが自動記録されます。
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs font-mono">
-                      <thead>
-                        <tr className="border-b border-slate-700 text-slate-400 bg-slate-900/60">
-                          <th className="py-2 px-3">日時</th>
-                          <th className="py-2 px-3">形式</th>
-                          <th className="py-2 px-3">所要時間</th>
-                          <th className="py-2 px-3">入力tok</th>
-                          <th className="py-2 px-3">出力tok</th>
-                          <th className="py-2 px-3">合計tok</th>
-                          <th className="py-2 px-3 text-right">コスト(USD)</th>
-                          <th className="py-2 px-3 text-right">概算(円)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800 text-slate-300">
-                        {aiHistory.slice(0, 10).map((h, idx) => {
-                          const costUsd = Number(h.estimatedCostUsd || calculateGeminiCost(h.promptTokens, h.candidatesTokens));
-                          const costJpy = usdToJpy(costUsd);
-                          const dateStr = h.createdAt ? new Date(h.createdAt).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-';
-                          return (
-                            <tr key={h.id || idx} className="hover:bg-slate-900/40 transition">
-                              <td className="py-2 px-3 text-slate-400">{dateStr}</td>
-                              <td className="py-2 px-3">
-                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 border border-slate-700 text-cyan-300">
-                                  {h.inputType === 'image' ? '画像解析' : 'テキスト'}
-                                </span>
-                              </td>
-                              <td className="py-2 px-3 text-slate-400">{h.latencyMs ? `${h.latencyMs}ms` : '-'}</td>
-                              <td className="py-2 px-3">{(h.promptTokens || 0).toLocaleString()}</td>
-                              <td className="py-2 px-3">{(h.candidatesTokens || 0).toLocaleString()}</td>
-                              <td className="py-2 px-3 font-semibold text-slate-200">{(h.totalTokens || 0).toLocaleString()}</td>
-                              <td className="py-2 px-3 text-right text-emerald-400 font-semibold">${costUsd.toFixed(5)}</td>
-                              <td className="py-2 px-3 text-right text-slate-300">¥{costJpy.toFixed(2)}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
               </div>
 
               {/* つまずき診断＆学習アドバイス */}
