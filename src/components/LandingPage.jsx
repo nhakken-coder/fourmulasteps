@@ -66,7 +66,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans antialiased break-keep selection:bg-[#E05A36] selection:text-white">
+    <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans antialiased break-words selection:bg-[#E05A36] selection:text-white">
       {/* グローバルヘッダー */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-[#FBF9F4]/90 border-b border-[#E8E2D7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -244,7 +244,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       </section>
 
       {/* 2. Problem セクション（ディープネイビー背景でハイコントラスト） */}
-      <section id="problem" className="py-16 sm:py-24 bg-[#0F172A] text-white">
+      <section id="problem" className="py-20 sm:py-28 bg-[#0F172A] text-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-[11px] font-bold text-[#E05A36] tracking-widest uppercase bg-[#E05A36]/10 px-3 py-1 rounded-full border border-[#E05A36]/20">
@@ -305,7 +305,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       </section>
 
       {/* 3. Method セクション（ウォームベージュ背景） */}
-      <section id="method" className="py-16 sm:py-24 border-b border-[#E8E2D7]">
+      <section id="method" className="py-16 sm:py-24 border-b border-[#E8E2D7] scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
             <div>
@@ -387,7 +387,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       </section>
 
       {/* 4. Features セクション（ウォームベージュ系、白カードでクリーン） */}
-      <section id="features" className="py-16 sm:py-24 bg-[#F8F6F0] border-b border-[#E8E2D7]">
+      <section id="features" className="py-16 sm:py-24 bg-[#F8F6F0] border-b border-[#E8E2D7] scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-[11px] font-bold text-[#D9532F] tracking-widest uppercase bg-orange-100/70 px-3 py-1 rounded-full border border-orange-200">
@@ -494,7 +494,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       </section>
 
       {/* 5. How It Works セクション（ウォームベージュ背景） */}
-      <section id="how-it-works" className="py-16 sm:py-24 border-b border-[#E8E2D7]">
+      <section id="how-it-works" className="py-16 sm:py-24 border-b border-[#E8E2D7] scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-[11px] font-bold text-[#D9532F] tracking-widest uppercase bg-orange-100/70 px-3 py-1 rounded-full border border-orange-200">
@@ -555,7 +555,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       </section>
 
       {/* 6. FAQ セクション（ウォームベージュ系、Claude案に倣い左見出し・右リストの2カラム構成） */}
-      <section id="faq" className="py-16 sm:py-24 bg-[#F8F6F0] border-b border-[#E8E2D7]">
+      <section id="faq" className="py-16 sm:py-24 bg-[#F8F6F0] border-b border-[#E8E2D7] scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* 左側：タイトル */}
