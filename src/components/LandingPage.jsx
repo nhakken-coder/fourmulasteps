@@ -14,11 +14,28 @@ import {
   FileText
 } from 'lucide-react';
 
-export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
+import { redirectToCheckout } from '../lib/stripeClient';
+
+export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [activeStepTab, setActiveStepTab] = useState(1);
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
   const [showComparisonTable, setShowComparisonTable] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleSubscribe = async (tier) => {
+    setIsCheckingOut(true);
+    try {
+      await redirectToCheckout({
+        tier,
+        cycle: billingCycle,
+        userId: user?.id,
+        userEmail: user?.email
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   const faqs = [
     {
@@ -686,10 +703,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
 
               <div className="mt-8 pt-4">
                 <button
-                  onClick={onLaunchApp}
-                  className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl transition"
+                  type="button"
+                  disabled={isCheckingOut}
+                  onClick={() => handleSubscribe('standard')}
+                  className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl transition disabled:opacity-50"
                 >
-                  一般会員を始める
+                  {isCheckingOut ? '決済画面を準備中...' : '一般会員を始める'}
                 </button>
               </div>
             </div>
@@ -762,11 +781,13 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
 
               <div className="mt-8 pt-4">
                 <button
-                  onClick={onLaunchApp}
-                  className="w-full py-3.5 px-4 text-xs sm:text-sm font-bold text-white bg-[#E05A36] hover:bg-[#C84826] rounded-xl shadow-lg shadow-[#E05A36]/30 transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                  type="button"
+                  disabled={isCheckingOut}
+                  onClick={() => handleSubscribe('premium')}
+                  className="w-full py-3.5 px-4 text-xs sm:text-sm font-bold text-white bg-[#E05A36] hover:bg-[#C84826] rounded-xl shadow-lg shadow-[#E05A36]/30 transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4 text-orange-200" />
-                  <span>プレミアム会員を始める</span>
+                  <span>{isCheckingOut ? '決済画面を準備中...' : 'プレミアム会員を始める'}</span>
                 </button>
               </div>
             </div>
