@@ -8,12 +8,17 @@ import {
   Lightbulb, 
   HelpCircle, 
   Check,
-  ChevronDown
+  ChevronDown,
+  ShieldCheck,
+  Zap,
+  FileText
 } from 'lucide-react';
 
 export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [activeStepTab, setActiveStepTab] = useState(1);
+  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
+  const [showComparisonTable, setShowComparisonTable] = useState(false);
 
   const faqs = [
     {
@@ -29,8 +34,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
       a: "はい。最新のAI画像認識機能により、活字の問題集だけでなく、手書きのノートや模試の問題用紙の写真も高精度にテキスト化し、4つの思考手順へ分解します。"
     },
     {
-      q: "利用料金はかかりますか？",
-      a: "現在、すべての基本機能（問題のAI解析、4ステップ思考法トレース、類似問題の自動生成、公式ライブラリ閲覧、弱点診断）を無料でご利用いただけます。"
+      q: "無料体験と有料プランの違いは何ですか？",
+      a: "無料体験では3問まで基本の4ステップ解説をお試しいただけます。月額480円の一般会員は月100問のAI解析と基礎定着類題・弱点グラフが利用でき、月額980円のプレミアム会員は月300問に加えて「途中式を1行も飛ばさない超詳細解説」「入試応用類題」「複数別解」「手書き添削」「AI学習処方箋」など全ての難関大対策機能が無制限でご利用いただけます。"
+    },
+    {
+      q: "いつでも解約できますか？",
+      a: "はい。契約期間の縛りは一切ございません。マイページからいつでもワンクリックで自動更新を停止・解約いただけます。解約後も現在の契約期間満了日までは有料機能をご利用いただけます。"
     },
     {
       q: "なぜ「4つの手順」で解けるようになるのですか？",
@@ -84,6 +93,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
             <a href="#method" className="hover:text-slate-900 transition">4ステップ思考法</a>
             <a href="#features" className="hover:text-slate-900 transition">4大機能</a>
             <a href="#how-it-works" className="hover:text-slate-900 transition">使い方</a>
+            <a href="#pricing" className="hover:text-slate-900 transition">料金プラン</a>
             <a href="#faq" className="hover:text-slate-900 transition">Q&A</a>
           </nav>
 
@@ -103,13 +113,11 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* 左カラム：コピー＆CTA */}
             <div className="lg:col-span-7 text-left">
-              {/* 上部バッジ */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E2DBD0] text-slate-700 text-xs font-semibold mb-6 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-[#D9532F]" />
                 <span>理解する → 集める → 形にする → 動かす</span>
               </div>
 
-              {/* メインキャッチコピー */}
               <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight text-slate-900 leading-[1.2] mb-6">
                 <span className="inline-block">解法の丸暗記は、</span>
                 <span className="inline-block">もう終わり。</span>
@@ -120,7 +128,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                 </span>
               </h1>
 
-              {/* サブコピー */}
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl">
                 <span className="inline-block">問題文をスマホで撮るだけ。</span>
                 <span className="inline-block">AIがどんな難問も</span>
@@ -128,7 +135,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                 <span className="inline-block">の4手順に分解し、解答の思考プロセスを完全に可視化します。</span>
               </p>
 
-              {/* CTAボタン群 */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
                 <button
                   onClick={onLaunchApp}
@@ -147,7 +153,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                 </button>
               </div>
 
-              {/* 安心材料タグ */}
               <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-slate-500 font-medium">
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 登録不要ですぐ利用可</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> スマホ撮影・手書き対応</span>
@@ -158,7 +163,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
             {/* 右カラム：アプリ画面プレビューカード */}
             <div className="lg:col-span-5">
               <div className="bg-white rounded-2xl border border-[#DDD6CA] shadow-xl p-5 relative overflow-hidden text-left">
-                {/* カードヘッダー */}
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
@@ -171,7 +175,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                   </span>
                 </div>
 
-                {/* 問題文ボックス */}
                 <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 mb-4">
                   <span className="text-[10px] font-bold text-slate-400 block mb-1">解析問題</span>
                   <p className="text-xs sm:text-sm font-semibold text-slate-900 leading-snug">
@@ -179,7 +182,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                   </p>
                 </div>
 
-                {/* 4ステップタブ（対話式切り替え可能） */}
                 <div className="grid grid-cols-4 gap-1 mb-3 bg-slate-100 p-1 rounded-lg">
                   {[1, 2, 3, 4].map((stepNum) => {
                     const step = stepsPreviewData[stepNum];
@@ -201,7 +203,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                   })}
                 </div>
 
-                {/* アクティブなステップの解説 */}
                 <div className="bg-[#FAF9F5] border border-[#EBE4D8] rounded-xl p-3.5 mb-4 min-h-[120px]">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-bold text-slate-900">
@@ -219,7 +220,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                   </pre>
                 </div>
 
-                {/* 類題ミニカード */}
                 <div className="border border-indigo-100 bg-indigo-50/50 rounded-xl p-3 flex items-start justify-between gap-3">
                   <div>
                     <span className="text-[10px] font-bold text-indigo-600 flex items-center gap-1 mb-0.5">
@@ -323,7 +323,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* ステップ1 */}
             <div className="bg-white border border-[#E2DBD0] p-6 rounded-2xl shadow-xs flex flex-col justify-between">
               <div>
                 <span className="text-3xl font-black text-slate-300 block mb-3 font-mono">1</span>
@@ -338,7 +337,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* ステップ2 */}
             <div className="bg-white border border-[#E2DBD0] p-6 rounded-2xl shadow-xs flex flex-col justify-between">
               <div>
                 <span className="text-3xl font-black text-slate-300 block mb-3 font-mono">2</span>
@@ -353,7 +351,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* ステップ3 */}
             <div className="bg-white border border-[#E2DBD0] p-6 rounded-2xl shadow-xs flex flex-col justify-between">
               <div>
                 <span className="text-3xl font-black text-slate-300 block mb-3 font-mono">3</span>
@@ -368,7 +365,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* ステップ4（Claudeデザインに倣い、ダークネイビーで強く強調） */}
             <div className="bg-[#0F172A] text-white border border-slate-800 p-6 rounded-2xl shadow-lg flex flex-col justify-between">
               <div>
                 <span className="text-3xl font-black text-[#E05A36] block mb-3 font-mono">4</span>
@@ -404,7 +400,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* 機能1 */}
             <div className="bg-white p-7 rounded-2xl border border-[#E2DBD0] shadow-sm flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-200 text-[#D9532F] flex items-center justify-center mb-5">
@@ -424,7 +419,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* 機能2 */}
             <div className="bg-white p-7 rounded-2xl border border-[#E2DBD0] shadow-sm flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mb-5">
@@ -444,7 +438,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* 機能3 */}
             <div className="bg-white p-7 rounded-2xl border border-[#E2DBD0] shadow-sm flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mb-5">
@@ -469,7 +462,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </div>
             </div>
 
-            {/* 機能4 */}
             <div className="bg-white p-7 rounded-2xl border border-[#E2DBD0] shadow-sm flex flex-col justify-between">
               <div>
                 <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 text-slate-800 flex items-center justify-center mb-5">
@@ -541,20 +533,330 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               </p>
             </div>
           </div>
-
-          <div className="mt-12 text-center">
-            <button
-              onClick={onLaunchApp}
-              className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md transition active:scale-95"
-            >
-              <span>アプリを起動して試す</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* 6. FAQ セクション（ウォームベージュ系、Claude案に倣い左見出し・右リストの2カラム構成） */}
+      {/* 6. Pricing セクション（ディープネイビー背景で高級感と説得力を演出） */}
+      <section id="pricing" className="py-20 sm:py-28 bg-[#0F172A] text-white scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-[11px] font-bold text-[#E05A36] tracking-widest uppercase bg-[#E05A36]/10 px-3 py-1 rounded-full border border-[#E05A36]/20">
+              PRICING
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
+              <span className="inline-block">分かりやすく透明な</span>
+              <span className="inline-block">料金プラン</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-400">
+              <span className="inline-block">まずは無料でお試し。</span>
+              <span className="inline-block">あなたの目標・学習量に合わせて、</span>
+              <span className="inline-block">いつでもアップグレード・解約が可能です。</span>
+            </p>
+
+            {/* 月払い / 年払い 切り替えトグル */}
+            <div className="mt-8 inline-flex items-center bg-slate-900 border border-slate-800 p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition ${
+                  billingCycle === 'monthly'
+                    ? 'bg-[#E05A36] text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                月払い
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle('yearly')}
+                className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition flex items-center gap-1.5 ${
+                  billingCycle === 'yearly'
+                    ? 'bg-[#E05A36] text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>年払い</span>
+                <span className="px-1.5 py-0.5 text-[10px] bg-amber-400 text-slate-950 rounded-full font-black">
+                  2ヶ月分お得
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3つの料金カード */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch mb-12">
+            {/* 1. 無料体験プラン */}
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-7 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">体験プラン</span>
+                <h3 className="text-xl font-bold text-white mt-1 mb-2">無料体験</h3>
+                <p className="text-xs text-slate-400 mb-6">
+                  まずは「4ステップ思考法」の解法プロセスを体験したい方に。
+                </p>
+
+                <div className="mb-6 pb-6 border-b border-slate-800">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-white font-mono">¥0</span>
+                  </div>
+                  <span className="text-xs text-slate-500 mt-1 block">登録不要・完全無料</span>
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-300">
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span><strong>体験用 AI問題解析 3問</strong></span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>基本 4ステップ思考法解説</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>公式ライブラリ（全213公式）閲覧</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-8 pt-4">
+                <button
+                  onClick={onLaunchApp}
+                  className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition"
+                >
+                  無料で体験してみる
+                </button>
+              </div>
+            </div>
+
+            {/* 2. 一般会員プラン */}
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-7 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">学校課題・定期テスト対策</span>
+                <h3 className="text-xl font-bold text-white mt-1 mb-2">一般会員</h3>
+                <p className="text-xs text-slate-400 mb-6">
+                  毎日の自習や宿題、定期テストの疑問を素早く解消したい方に。
+                </p>
+
+                <div className="mb-6 pb-6 border-b border-slate-800">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-white font-mono">
+                      ¥{billingCycle === 'monthly' ? '480' : '4,800'}
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium">
+                      / {billingCycle === 'monthly' ? '月' : '年'}
+                    </span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <span className="text-[11px] text-amber-400 mt-1 block">
+                      月あたり実質 400円（年間960円お得）
+                    </span>
+                  )}
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-300">
+                  <li className="flex items-center gap-2.5 font-semibold text-white">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>月間 100問のAI解析</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>標準 4ステップ思考法解説</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>思考定着 類題1問自動生成（基礎）</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>別解アプローチ 1パターン提示</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>つまずきステップの割合グラフ表示</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>直近30件の解析履歴保存</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>公式集（全213公式）完全連動</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-8 pt-4">
+                <button
+                  onClick={onLaunchApp}
+                  className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl transition"
+                >
+                  一般会員を始める
+                </button>
+              </div>
+            </div>
+
+            {/* 3. プレミアム会員プラン（おすすめハイライト） */}
+            <div className="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-[#E05A36] rounded-2xl p-7 flex flex-col justify-between relative shadow-2xl shadow-[#E05A36]/10">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#E05A36] text-white text-[11px] font-black uppercase px-3.5 py-0.5 rounded-full shadow-md flex items-center gap-1">
+                <Zap className="w-3 h-3 fill-current" />
+                一番人気・受験対策におすすめ
+              </div>
+
+              <div>
+                <span className="text-xs font-bold text-[#E05A36] uppercase tracking-wide">共通テスト・難関大入試突破</span>
+                <h3 className="text-xl font-bold text-white mt-1 mb-2">プレミアム会員</h3>
+                <p className="text-xs text-slate-300 mb-6">
+                  初見問題の再現力と別解アプローチ、弱点克服を徹底的に極めたい受験生に。
+                </p>
+
+                <div className="mb-6 pb-6 border-b border-slate-800">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-white font-mono">
+                      ¥{billingCycle === 'monthly' ? '980' : '9,800'}
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium">
+                      / {billingCycle === 'monthly' ? '月' : '年'}
+                    </span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <span className="text-[11px] text-amber-400 mt-1 block">
+                      月あたり実質 約816円（年間1,960円お得）
+                    </span>
+                  )}
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-200">
+                  <li className="flex items-center gap-2.5 font-bold text-amber-300">
+                    <Check className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>月間 300問のたっぷりAI解析</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-semibold text-white">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>超詳細・行間完全解説モード（途中式全展開）</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-semibold text-white">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>手書き途中式のミス特定（答案添削機能）</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>思考定着 類題2問（基礎確認 ＋ 入試応用）</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>複数ルートの別解網羅（ベクトル/幾何/代数等）</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>AIパーソナライズ学習処方箋 ＆ 弱点特訓ドリル</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>マイ弱点克服ノートのPDF一括出力・印刷</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>解析履歴の無制限保存 ＆ 弱点フォルダ分け</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-8 pt-4">
+                <button
+                  onClick={onLaunchApp}
+                  className="w-full py-3.5 px-4 text-xs sm:text-sm font-bold text-white bg-[#E05A36] hover:bg-[#C84826] rounded-xl shadow-lg shadow-[#E05A36]/30 transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-orange-200" />
+                  <span>プレミアム会員を始める</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 全機能比較表のトグル展開 */}
+          <div className="text-center">
+            <button
+              onClick={() => setShowComparisonTable(!showComparisonTable)}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-slate-400 hover:text-white font-medium py-2 px-4 rounded-lg bg-slate-900 border border-slate-800 transition"
+            >
+              <span>{showComparisonTable ? '機能比較表を閉じる' : '全プランの詳しい機能比較表を見る'}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showComparisonTable ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+
+          {showComparisonTable && (
+            <div className="mt-8 overflow-x-auto bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl animate-fade-in text-left">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400">
+                    <th className="py-3 px-4 font-bold text-white">機能・サービス項目</th>
+                    <th className="py-3 px-4 font-bold text-slate-300">無料体験</th>
+                    <th className="py-3 px-4 font-bold text-slate-300">一般会員</th>
+                    <th className="py-3 px-4 font-bold text-[#E05A36]">プレミアム会員</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">月間AI解析問題数</td>
+                    <td className="py-3 px-4">体験用 3問</td>
+                    <td className="py-3 px-4 font-bold text-white">100問 /月</td>
+                    <td className="py-3 px-4 font-bold text-[#E05A36]">300問 /月</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">4ステップ思考法解説</td>
+                    <td className="py-3 px-4">基本解説</td>
+                    <td className="py-3 px-4">標準解説</td>
+                    <td className="py-3 px-4 text-amber-300 font-semibold">超詳細・行間完全解説</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">手書き途中式の答案添削</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4 text-emerald-400 font-bold">◯ ミス特定・改善指導</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">思考定着 類題自動生成</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4">1問（基礎定着）</td>
+                    <td className="py-3 px-4 text-white font-semibold">2問（基礎 ＋ 入試実戦）</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">別解アプローチ提示</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4">1パターン</td>
+                    <td className="py-3 px-4 text-white font-semibold">複数ルート網羅（ベクトル/幾何等）</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">弱点診断・学習処方箋</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4">つまずき割合グラフ</td>
+                    <td className="py-3 px-4 text-amber-300 font-semibold">AI学習処方箋 ＋ 弱点特訓ドリル</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">解析履歴の保存</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4">直近 30件</td>
+                    <td className="py-3 px-4 text-white font-semibold">無制限（フォルダ分類可能）</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">マイ弱点ノートPDF出力・印刷</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4 text-slate-600">-</td>
+                    <td className="py-3 px-4 text-emerald-400 font-bold">◯ A4印刷対応PDF一括生成</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-white">公式集（全213公式）</td>
+                    <td className="py-3 px-4">閲覧可能</td>
+                    <td className="py-3 px-4">完全連動</td>
+                    <td className="py-3 px-4 text-white">公式マスター状態管理連動</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 7. FAQ セクション（ウォームベージュ系、Claude案に倣い左見出し・右リストの2カラム構成） */}
       <section id="faq" className="py-16 sm:py-24 bg-[#F8F6F0] border-b border-[#E8E2D7] scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -567,7 +869,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
                 よくある質問
               </h2>
               <p className="text-sm text-slate-600 leading-relaxed">
-                サービスの利用方法や対応範囲など、学習者の皆様からよく寄せられる質問にお答えします。
+                サービスの利用方法や料金プランなど、学習者の皆様からよく寄せられる質問にお答えします。
               </p>
             </div>
 
@@ -603,7 +905,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
         </div>
       </section>
 
-      {/* 7. 最終CTAエリア（ディープネイビー背景で力強く引き締め） */}
+      {/* 8. 最終CTAエリア（ディープネイビー背景で力強く引き締め） */}
       <section className="py-20 sm:py-28 relative overflow-hidden text-center bg-[#0F172A] text-white">
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-5 leading-tight">
@@ -628,7 +930,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
         </div>
       </section>
 
-      {/* 8. グローバルフッター（ディープネイビー） */}
+      {/* 9. グローバルフッター（ディープネイビー） */}
       <footer className="py-8 bg-[#090E1A] border-t border-slate-800 text-xs text-slate-400">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -640,6 +942,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
             <a href="#problem" className="hover:text-white transition">開発背景</a>
             <a href="#method" className="hover:text-white transition">思考法</a>
             <a href="#features" className="hover:text-white transition">機能</a>
+            <a href="#pricing" className="hover:text-white transition">料金プラン</a>
             <a href="#faq" className="hover:text-white transition">Q&A</a>
             <button onClick={onLaunchApp} className="text-[#D9532F] hover:underline font-bold">
               アプリを起動
