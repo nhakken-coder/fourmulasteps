@@ -39,7 +39,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white font-sans antialiased">
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white font-sans antialiased break-keep">
       {/* グローバルヘッダー */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -98,19 +98,23 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
           </div>
 
           {/* メインキャッチコピー */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight sm:leading-tight mb-6">
-            解法の丸暗記は、もう終わり。<br />
-            数学の初見問題が解ける<br className="sm:hidden" />
-            <span className="bg-gradient-to-r from-indigo-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight sm:leading-snug mb-6">
+            <span className="inline-block">解法の丸暗記は、</span>
+            <span className="inline-block">もう終わり。</span>
+            <br />
+            <span className="inline-block">数学の初見問題が解ける</span>
+            <span className="inline-block bg-gradient-to-r from-indigo-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
               「4ステップ思考法」
             </span>
           </h1>
 
           {/* サブコピー */}
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
-            問題文をスマホで撮るだけ。最新のAIがどんな難問も
-            <span className="text-white font-semibold">「理解する・集める・形にする・動かす」</span>
-            の4手順に分解し、解答の思考プロセスを完全に可視化します。
+            <span className="inline-block">問題文をスマホで撮るだけ。</span>
+            <span className="inline-block">最新のAIがどんな難問も</span>
+            <span className="inline-block text-white font-semibold">「理解する・集める・形にする・動かす」</span>
+            <span className="inline-block">の4手順に分解し、</span>
+            <span className="inline-block">解答の思考プロセスを完全に可視化します。</span>
           </p>
 
           {/* CTAボタン */}
@@ -252,10 +256,13 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               数学でペンが止まる本当の理由
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
-              こんな悩みを抱えていませんか？
+              <span className="inline-block">こんな悩みを</span>
+              <span className="inline-block">抱えていませんか？</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-400">
-              問題集を何周解いても初見問題が解けないのは、あなたの才能不足ではありません。
+              <span className="inline-block">問題集を何周解いても</span>
+              <span className="inline-block">初見問題が解けないのは、</span>
+              <span className="inline-block">あなたの才能不足ではありません。</span>
             </p>
           </div>
 
@@ -327,10 +334,16 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               The fourmulasteps Method
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
-              あらゆる数学の難問を突破する「4つの手順」
+              <span className="inline-block">あらゆる数学の難問を</span>
+              <span className="inline-block">突破する</span>
+              <span className="inline-block">「4つの手順」</span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              数学の解答はひらめきではありません。一流の受験生が頭の中で無意識に行っている思考を、誰でも再現できる4つのステップに形式化しました。
+            <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
+              <span className="inline-block">数学の解答はひらめきではありません。</span>
+              <span className="inline-block">一流の受験生が頭の中で</span>
+              <span className="inline-block">無意識に行っている思考を、</span>
+              <span className="inline-block">誰でも再現できる</span>
+              <span className="inline-block">4つのステップに形式化しました。</span>
             </p>
           </div>
 
@@ -410,10 +423,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               Features
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
-              fourmulasteps を支える4つの強力な機能
+              <span className="inline-block">fourmulasteps を支える</span>
+              <span className="inline-block">4つの強力な機能</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-400">
-              あなたの毎日の自習と受験勉強を、劇的に効率化するAI学習システム。
+              <span className="inline-block">あなたの毎日の自習と受験勉強を、</span>
+              <span className="inline-block">劇的に効率化するAI学習システム。</span>
             </p>
           </div>
 
@@ -509,10 +524,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
               How It Works
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
-              使い方はシンプル。3つのステップ
+              <span className="inline-block">使い方はシンプル。</span>
+              <span className="inline-block">3つのステップ</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-400">
-              面倒な会員登録なしで、今すぐブラウザから使い始められます。
+              <span className="inline-block">面倒な会員登録なしで、</span>
+              <span className="inline-block">今すぐブラウザから使い始められます。</span>
             </p>
           </div>
 
@@ -613,12 +630,14 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas }) {
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-5">
-            4ステップ思考法で、<br className="sm:hidden" />
-            数学の壁を突破しよう。
+            <span className="inline-block">4ステップ思考法で、</span>
+            <span className="inline-block">数学の壁を突破しよう。</span>
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base text-slate-300 leading-relaxed mb-10">
-            もう解法の丸暗記に悩む必要はありません。今日からあなたの勉強に「再現可能な思考力」を取り入れましょう。
+            <span className="inline-block">もう解法の丸暗記に悩む必要はありません。</span>
+            <span className="inline-block">今日からあなたの勉強に</span>
+            <span className="inline-block">「再現可能な思考力」を取り入れましょう。</span>
           </p>
 
           <button
