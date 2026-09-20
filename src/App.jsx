@@ -203,13 +203,13 @@ const initialProblems = [
         desc: "命題 $A$ の否定を仮定し、そこから矛盾を導くことで原命題 $A$ が真であると結論する証明方法。"
       }),
       enrichFormulaWithCollection({
-        name: "2次式の因数分解公式(基本形)",
-        subject: "数学Ⅰ",
-        category: "数式",
-        desc: "$$X^b - 1 = (X - 1)(X^{b-1} + X^{b-2} + \\dots + 1)$$ の因数分解構造を利用"
+        name: "高次式の因数分解公式（xⁿ−1の因数分解）",
+        subject: "数学Ⅱ",
+        category: "式と証明",
+        desc: "$$x^n - 1 = (x - 1)(x^{n-1} + x^{n-2} + \\dots + 1)$$ を用いて $2^n - 1 = (2^a)^b - 1$ を約数分解する。"
       })
     ].filter(Boolean),
-    alternativeSolution: "【別解：対偶による証明】\n「$n$ が合成数ならば $2^n - 1$ は合成数である」ことを対偶として示す。\n$n = ab$ ($1 < a < n, 1 < b < n$) とおくと、同様の因数分解より $2^n - 1 = (2^a - 1)(2^{a(b-1)} + \\dots + 1)$ となり、$1 < 2^a - 1 < 2^n - 1$ であるから $2^n - 1$ も合成数となる。対偶が真であるため元の命題も真。",
+    alternativeSolution: "【別解・アプローチ：対偶による証明と合同式（位数）の視点】\n\n1. 対偶による直接証明：\n元の命題「$2^n - 1$ が素数 $\\implies n$ が素数」の対偶は、「$n$ が合成数 $\\implies 2^n - 1$ が合成数」です。\n$n = ab$ ($1 < a < n, 1 < b < n$) とおくと、高次因数分解公式より\n$$2^n - 1 = (2^a - 1)\\left((2^a)^{b-1} + (2^a)^{b-2} + \\dots + 1\\right)$$\nとなり、$1 < 2^a - 1 < 2^n - 1$ より $2^n - 1$ は $2^a - 1$ という真の約数を持ちます。したがって $2^n - 1$ は合成数となり、対偶が真であるため元の命題も真であることが示されます。\n\n2. 発展的視点（合同式と位数）：\n素数 $p$ が $2^n - 1$ の約数であるとき、$2^n \\equiv 1 \\pmod p$ が成り立ちます。フェルマーの小定理より $2^{p-1} \\equiv 1 \\pmod p$ であり、$\\text{mod } p$ における $2$ の位数 $d$ は $n$ の約数となります。位数論の観点からも、指数 $n$ が素数であることの必然性が深く理解できます。",
     similarProblems: [
       {
         title: "フェルマー数に関する類似問題（対の重要テーマ）",
@@ -218,7 +218,7 @@ const initialProblems = [
         approach: "背理法を用いる。$n$ が $2$ の累乗でないと仮定すると、$n$ は $3$ 以上の奇数の約数 $b$ をもつので、$n = a \\cdot b$ ($a \\ge 1, b \\ge 3, b$ は奇数) と書ける。\nここで $X = 2^a$ とおくと、$b$ が奇数であることから次の因数分解が成り立つ：\n$$2^n + 1 = (2^a)^b + 1 = (2^a + 1)\\left((2^a)^{b-1} - (2^a)^{b-2} + \\dots - 2^a + 1\\right)$$\n$a \\ge 1$ かつ $b \\ge 3$ より、$1 < 2^a + 1 < 2^n + 1$ であり、右辺の2つの因数はともに $1$ より大きい整数である。\nこれは $2^n + 1$ が素数であることに矛盾する。\nよって、$n$ は $2$ の累乗である。（証明終）"
       },
       {
-        title: "恒等式の因数分解を用いた素数証明",
+        title: "複2次式の因数分解を用いた素数判定",
         question: "自然数 $n$ に対し、$n^4 + 4$ が素数となるような $n$ をすべて求めよ。",
         hint: "【理解する】$n^4 + 4$ が素数となる自然数 $n$ の値を決定する。\n【集める】$n \\ge 1$（自然数）。$n^4 + 4$ を積の形に変形できないか考える。\n【形にする】複2次式の変形により、$n^4 + 4 = (n^2 + 2)^2 - (2n)^2 = (n^2 + 2n + 2)(n^2 - 2n + 2)$ へ因数分解する。\n【動かす】2つの因数の大小を評価し、素数となるためには小さい方の因数が $1$ でなければならない条件から $n$ を求める。",
         approach: "$n^4 + 4 = (n^2 + 2)^2 - (2n)^2 = (n^2 + 2n + 2)(n^2 - 2n + 2)$ と因数分解できる。\n$n \\ge 1$ のとき：\n$$n^2 + 2n + 2 > n^2 - 2n + 2 = (n-1)^2 + 1 \\ge 1$$\n積が素数となるためには、小さい方の因数が $1$ でなければならない。\n$$(n-1)^2 + 1 = 1 \\iff (n-1)^2 = 0 \\iff n = 1$$\n$n = 1$ のとき $n^4 + 4 = 1 + 4 = 5$ となり、これは素数である。\nしたがって、求める自然数は $n = 1$ のみである。"
@@ -238,7 +238,8 @@ export default function FourmulaStepsApp() {
   const [problems, setProblems] = useState(initialProblems);
   const [selectedProblemId, setSelectedProblemId] = useState(1);
   const [openStep, setOpenStep] = useState(1);
-  const [showAlt, setShowAlt] = useState(true);
+  const [showGoal, setShowGoal] = useState(false);
+  const [showAlt, setShowAlt] = useState(false);
   const [openSimilarProblems, setOpenSimilarProblems] = useState([0, 1]);
   const [inputMode, setInputMode] = useState('image');
   const [inputText, setInputText] = useState('');
@@ -881,18 +882,68 @@ export default function FourmulaStepsApp() {
     }
   };
 
+  const STEP_THEMES = {
+    1: {
+      name: '理解する',
+      sub: '最終目的の言語化と方向性',
+      border: 'border-indigo-500/80',
+      borderActive: 'border-indigo-400',
+      bgActive: 'bg-indigo-950/40',
+      numBgActive: 'bg-indigo-600 text-white ring-2 ring-indigo-400',
+      numBgInactive: 'bg-slate-800 text-indigo-300 border border-indigo-700/60',
+      badge: 'bg-indigo-950/90 text-indigo-300 border-indigo-700/70',
+      textAccent: 'text-indigo-400',
+    },
+    2: {
+      name: '集める',
+      sub: '前提・数値・制約の整理',
+      border: 'border-cyan-500/80',
+      borderActive: 'border-cyan-400',
+      bgActive: 'bg-cyan-950/40',
+      numBgActive: 'bg-cyan-600 text-white ring-2 ring-cyan-400',
+      numBgInactive: 'bg-slate-800 text-cyan-300 border border-cyan-700/60',
+      badge: 'bg-cyan-950/90 text-cyan-300 border-cyan-700/70',
+      textAccent: 'text-cyan-400',
+    },
+    3: {
+      name: '形にする',
+      sub: '文字設定と条件の定式化',
+      border: 'border-amber-500/80',
+      borderActive: 'border-amber-400',
+      bgActive: 'bg-amber-950/40',
+      numBgActive: 'bg-amber-600 text-white ring-2 ring-amber-400',
+      numBgInactive: 'bg-slate-800 text-amber-300 border border-amber-700/60',
+      badge: 'bg-amber-950/90 text-amber-300 border-amber-700/70',
+      textAccent: 'text-amber-400',
+    },
+    4: {
+      name: '動かす',
+      sub: 'ゴール達成への式変形・結論',
+      border: 'border-emerald-500/80',
+      borderActive: 'border-emerald-400',
+      bgActive: 'bg-emerald-950/40',
+      numBgActive: 'bg-emerald-600 text-white ring-2 ring-emerald-400',
+      numBgInactive: 'bg-slate-800 text-emerald-300 border border-emerald-700/60',
+      badge: 'bg-emerald-950/90 text-emerald-300 border-emerald-700/70',
+      textAccent: 'text-emerald-400',
+    },
+  };
+
   const calculateAnalysis = () => {
     const stats = {
-      1: { ok: 0, stuck: 0, total: 0 },
-      2: { ok: 0, stuck: 0, total: 0 },
-      3: { ok: 0, stuck: 0, total: 0 },
-      4: { ok: 0, stuck: 0, total: 0 },
+      1: { ok: 0, hint: 0, stuck: 0, total: 0 },
+      2: { ok: 0, hint: 0, stuck: 0, total: 0 },
+      3: { ok: 0, hint: 0, stuck: 0, total: 0 },
+      4: { ok: 0, hint: 0, stuck: 0, total: 0 },
     };
 
     Object.values(userLogs).forEach(log => {
       [1, 2, 3, 4].forEach(s => {
         if (log[s] === 'ok') {
           stats[s].ok += 1;
+          stats[s].total += 1;
+        } else if (log[s] === 'hint') {
+          stats[s].hint += 1;
           stats[s].total += 1;
         } else if (log[s] === 'stuck') {
           stats[s].stuck += 1;
@@ -994,57 +1045,62 @@ export default function FourmulaStepsApp() {
         </div>
 
         {/* 下段: ナビゲーションタブ */}
-        <div className="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs sm:text-sm flex-wrap gap-1 shadow-inner">
-          <button
-            onClick={() => setActiveTab('solve')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-              activeTab === 'solve' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            演習・解説
-          </button>
-          <button
-            onClick={() => setActiveTab('similar')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-              activeTab === 'similar' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/50' : 'text-emerald-400 hover:text-emerald-300'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            類似問題 (2問)
-          </button>
-          <button
-            onClick={() => {
-              setInputMode('image');
-              setActiveTab('scan');
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer shadow-sm ${
-              activeTab === 'scan'
-                ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 text-white shadow-indigo-500/25 ring-1 ring-cyan-400/50'
-                : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border border-cyan-800/60'
-            }`}
-          >
-            <Camera className="w-4 h-4 text-cyan-400" />
-            画像から問題入力
-          </button>
-          <button
-            onClick={() => setActiveTab('formulas')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
-              activeTab === 'formulas' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Library className="w-4 h-4 text-cyan-400" />
-            数学公式集 (213)
-          </button>
-          <button
-            onClick={() => setActiveTab('analysis')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
-              activeTab === 'analysis' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <BarChart2 className="w-4 h-4 text-cyan-400" />
-            学習・弱点分析
-          </button>
+        <div className="flex items-center justify-between bg-slate-800/90 p-1.5 rounded-xl border border-slate-700 text-xs sm:text-sm flex-wrap gap-1.5 shadow-inner">
+          <div className="flex items-center gap-1 flex-wrap">
+            <button
+              onClick={() => setActiveTab('solve')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                activeTab === 'solve' ? 'bg-indigo-600 text-white shadow' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              演習・解説
+            </button>
+            <button
+              onClick={() => setActiveTab('similar')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                activeTab === 'similar' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/50' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              類似問題
+            </button>
+            <button
+              onClick={() => setActiveTab('formulas')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                activeTab === 'formulas' ? 'bg-indigo-600 text-white shadow' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <Library className="w-4 h-4 text-cyan-400" />
+              公式集 ({MATH_FORMULAS.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('analysis')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                activeTab === 'analysis' ? 'bg-indigo-600 text-white shadow' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <BarChart2 className="w-4 h-4 text-cyan-400" />
+              弱点分析
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                setInputMode('image');
+                setActiveTab('scan');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-sm ${
+                activeTab === 'scan'
+                  ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white ring-1 ring-cyan-400'
+                  : 'bg-slate-750 hover:bg-slate-700 text-cyan-300 hover:text-white border border-cyan-800/80'
+              }`}
+            >
+              <Camera className="w-3.5 h-3.5 text-cyan-400" />
+              <span>問題読み取り（カメラ/画像）</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -1122,17 +1178,6 @@ export default function FourmulaStepsApp() {
                 </div>
               </div>
 
-              {/* 目標（ゴール）ナビゲーター */}
-              <div className="bg-gradient-to-r from-indigo-900/80 via-slate-800 to-slate-800 border-2 border-indigo-500/80 rounded-xl p-4 shadow-2xl relative overflow-hidden">
-                <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold tracking-wider mb-1">
-                  <Target className="w-4 h-4 text-amber-400 animate-pulse" />
-                  <span>STEP 1 で定義した目指すべきゴール（最終目的）</span>
-                </div>
-                <div className="text-sm font-bold text-amber-300 font-sans pl-6">
-                  <MathText text={currentProblem.goal || "最終目的を明示"} />
-                </div>
-              </div>
-
               {/* 問題文 */}
               <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-700 pb-3 flex-wrap gap-2">
@@ -1140,7 +1185,7 @@ export default function FourmulaStepsApp() {
                     <span className="text-xs px-2.5 py-1 rounded bg-indigo-950 text-indigo-300 border border-indigo-700 font-bold">
                       {currentProblem.difficulty || "標準"}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-slate-300 font-medium">
                       {currentProblem.university || "大学入試"}
                     </span>
                   </div>
@@ -1149,7 +1194,7 @@ export default function FourmulaStepsApp() {
                   </h2>
                 </div>
 
-                <div className="text-sm text-slate-200 leading-relaxed font-sans bg-slate-900/60 p-4 rounded-lg border border-slate-750">
+                <div className="text-sm text-slate-100 leading-relaxed font-sans bg-slate-900/80 p-4 rounded-lg border border-slate-700">
                   <MathText text={currentProblem.question} />
                   {currentProblem.imageUrl && (
                     <div className="mt-4 pt-4 border-t border-slate-800">
@@ -1183,6 +1228,43 @@ export default function FourmulaStepsApp() {
                 </div>
               </div>
 
+              {/* 目標（ゴール）ナビゲーター：初期状態は折りたたんで隠し、自力で考えた後に開示 */}
+              <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/60 rounded-xl p-4 shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => setShowGoal(!showGoal)}
+                  className="w-full flex items-center justify-between text-left cursor-pointer gap-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/40 shrink-0">
+                      <Target className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-indigo-300">
+                          Step 1 で定義した目指すべきゴール（最終目的・解法方針）
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-semibold hidden sm:inline">
+                          思考ガイド
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 mt-0.5">
+                        まずは自力で問題文を考えた後、クリックして思考方針を開示してください
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-200 border border-indigo-600/70 shrink-0 transition">
+                    {showGoal ? '方針を隠す ▲' : '方針を見る ▼'}
+                  </span>
+                </button>
+
+                {showGoal && (
+                  <div className="mt-3 pt-3 border-t border-slate-800 text-sm font-bold text-amber-300 pl-2 font-sans animate-in fade-in duration-200">
+                    <MathText text={currentProblem.goal || "最終目的を明示"} />
+                  </div>
+                )}
+              </div>
+
               {/* 4ステップアコーディオン */}
               <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
                 <div className="flex flex-col gap-2 mb-4 border-b border-slate-700 pb-3">
@@ -1191,16 +1273,16 @@ export default function FourmulaStepsApp() {
                       <Code2 className="w-5 h-5" />
                       fourmulasteps 思考プロセス
                     </h3>
-                    <span className="text-[11px] text-slate-400">自力で再現できたか記録</span>
+                    <span className="text-xs text-slate-300 font-medium">各ステップの自力再現度を記録</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium flex-wrap pt-1">
-                    <span className="px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/60">① 理解する</span>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium flex-wrap pt-1">
+                    <span className="px-2.5 py-1 rounded bg-indigo-950/90 text-indigo-300 border border-indigo-700/80 font-bold">① 理解する</span>
                     <span className="text-slate-500">→</span>
-                    <span className="px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/60">② 集める</span>
+                    <span className="px-2.5 py-1 rounded bg-cyan-950/90 text-cyan-300 border border-cyan-700/80 font-bold">② 集める</span>
                     <span className="text-slate-500">→</span>
-                    <span className="px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800/60">③ 形にする</span>
+                    <span className="px-2.5 py-1 rounded bg-amber-950/90 text-amber-300 border border-amber-700/80 font-bold">③ 形にする</span>
                     <span className="text-slate-500">→</span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">④ 動かす</span>
+                    <span className="px-2.5 py-1 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700/80 font-bold">④ 動かす</span>
                   </div>
                 </div>
 
@@ -1208,52 +1290,89 @@ export default function FourmulaStepsApp() {
                   {currentProblem.steps.map((s) => {
                     const isOpen = openStep === s.step;
                     const logStatus = userLogs[currentProblem.id]?.[s.step];
+                    const theme = STEP_THEMES[s.step] || STEP_THEMES[1];
+                    const cleanTitle = s.title.replace(/^手順\d+[：:]\s*/, '').replace(/^Step\s*\d+[：:]\s*/i, '');
 
                     return (
-                      <div key={s.step} className={`border rounded-lg overflow-hidden transition-all ${isOpen ? 'border-indigo-500 bg-slate-900/80 shadow-indigo-500/10 shadow-lg' : 'border-slate-700/60 bg-slate-800/50'}`}>
-                        <button onClick={() => setOpenStep(isOpen ? null : s.step)} className="w-full flex items-center justify-between p-4 text-left">
-                          <div className="flex items-center gap-3">
-                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${isOpen ? 'bg-indigo-600 text-white ring-2 ring-indigo-400' : 'bg-slate-700 text-slate-300'}`}>
+                      <div 
+                        key={s.step} 
+                        className={`border rounded-xl overflow-hidden transition-all duration-200 ${
+                          isOpen 
+                            ? `${theme.borderActive} ${theme.bgActive} shadow-lg ring-1 ring-inset ${theme.borderActive}` 
+                            : 'border-slate-700/70 bg-slate-800/60 hover:border-slate-600'
+                        }`}
+                      >
+                        <button 
+                          onClick={() => setOpenStep(isOpen ? null : s.step)} 
+                          className="w-full flex items-center justify-between p-4 text-left cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3.5">
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${isOpen ? theme.numBgActive : theme.numBgInactive}`}>
                               S{s.step}
                             </span>
                             <div>
-                              <span className="text-xs text-indigo-400 block font-mono font-semibold">{s.badge}</span>
-                              <span className="font-semibold text-sm text-slate-100">Step {s.step}: {s.title}</span>
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${theme.badge}`}>
+                                  Step {s.step} 【{theme.name}】
+                                </span>
+                                <span className="text-xs text-slate-300 hidden sm:inline">
+                                  {theme.sub}
+                                </span>
+                              </div>
+                              <h4 className="font-bold text-sm text-slate-100">
+                                {cleanTitle}
+                              </h4>
                             </div>
                           </div>
-                          {isOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+                          {isOpen ? <ChevronUp className="w-5 h-5 text-slate-300" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
                         </button>
                         {isOpen && (
-                          <div className="px-4 pb-4 pt-2 border-t border-slate-800/80 text-sm text-slate-300 space-y-3">
-                            <div className="whitespace-pre-line leading-relaxed font-sans bg-slate-950/60 p-4 rounded-lg border border-slate-800">
+                          <div className="px-5 pb-5 pt-2 border-t border-slate-800 text-sm text-slate-200 space-y-4">
+                            <div className="whitespace-pre-line leading-relaxed font-sans bg-slate-950/70 p-4 rounded-xl border border-slate-750">
                               <MathText text={s.content} />
                             </div>
 
-                            {/* 自力再現・つまずきチェッカー */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-2 gap-2 border-t border-slate-800/60">
-                              <span className="text-xs text-slate-400">このステップを自力で思いつき変形できましたか？</span>
-                              <div className="flex items-center gap-2">
+                            {/* 自力再現・つまずき3択チェッカー */}
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3 gap-2.5 border-t border-slate-800">
+                              <span className="text-xs text-slate-300 font-medium">
+                                このステップの自力再現度：
+                              </span>
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <button
+                                  type="button"
                                   onClick={() => handleStepLog(currentProblem.id, s.step, 'ok')}
-                                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded transition font-medium border ${
+                                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition font-bold border cursor-pointer ${
                                     logStatus === 'ok'
-                                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50 font-bold'
-                                      : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'
+                                      ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500 ring-2 ring-emerald-500/40'
+                                      : 'bg-slate-900/90 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-800'
                                   }`}
                                 >
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
-                                  自力でできた
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>自力でできた</span>
                                 </button>
                                 <button
-                                  onClick={() => handleStepLog(currentProblem.id, s.step, 'stuck')}
-                                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded transition font-medium border ${
-                                    logStatus === 'stuck'
-                                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/50 font-bold'
-                                      : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'
+                                  type="button"
+                                  onClick={() => handleStepLog(currentProblem.id, s.step, 'hint')}
+                                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition font-bold border cursor-pointer ${
+                                    logStatus === 'hint'
+                                      ? 'bg-amber-500/25 text-amber-300 border-amber-500 ring-2 ring-amber-500/40'
+                                      : 'bg-slate-900/90 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-800'
                                   }`}
                                 >
-                                  <XCircle className="w-3.5 h-3.5" />
-                                  ここでつまずいた
+                                  <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+                                  <span>ヒントを見て解けた</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleStepLog(currentProblem.id, s.step, 'stuck')}
+                                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition font-bold border cursor-pointer ${
+                                    logStatus === 'stuck'
+                                      ? 'bg-rose-500/25 text-rose-300 border-rose-500 ring-2 ring-rose-500/40'
+                                      : 'bg-slate-900/90 text-slate-300 border-slate-700 hover:text-white hover:bg-slate-800'
+                                  }`}
+                                >
+                                  <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                                  <span>つまずいた</span>
                                 </button>
                               </div>
                             </div>
@@ -1265,28 +1384,33 @@ export default function FourmulaStepsApp() {
                 </div>
               </div>
 
-              {/* 別解・検算アプローチ（回答・手順4の直後） */}
+              {/* 別解・検算アプローチ（回答・手順4の直後：初期状態は閉じた状態） */}
               <div id="alternative-section" className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
                 <button 
                   type="button"
                   onClick={() => setShowAlt(!showAlt)} 
-                  className="w-full flex items-center justify-between text-left cursor-pointer"
+                  className="w-full flex items-center justify-between text-left cursor-pointer gap-2"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/30">
+                    <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/30 shrink-0">
                       <Lightbulb className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-base text-white">別解・検算アプローチ</h4>
-                      <p className="text-xs text-slate-400">別角度からの解法と検算のポイント</p>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-base text-white">別解・検算アプローチ</h4>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 font-medium">
+                          4ステップ確認後に開くことを推奨
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 mt-0.5">別角度からの解法と検算のポイント</p>
                     </div>
                   </div>
-                  <span className="text-xs text-indigo-400 font-medium px-3 py-1 bg-slate-900 rounded-lg border border-slate-700">
-                    {showAlt ? '折りたたむ' : '表示する'}
+                  <span className="text-xs text-indigo-300 font-semibold px-3 py-1.5 bg-slate-900 rounded-lg border border-slate-700 transition hover:text-white">
+                    {showAlt ? '折りたたむ ▲' : '表示する ▼'}
                   </span>
                 </button>
                 {showAlt && (
-                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-200 bg-slate-900/90 p-4 rounded-xl border border-slate-700/60 leading-relaxed font-sans">
+                  <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-200 bg-slate-900/90 p-4 rounded-xl border border-slate-700/60 leading-relaxed font-sans whitespace-pre-line animate-in fade-in duration-200">
                     <MathText text={currentProblem.alternativeSolution || "別解アプローチが設定されていません。"} />
                   </div>
                 )}
@@ -1757,7 +1881,7 @@ export default function FourmulaStepsApp() {
                 </div>
 
                 <span className="text-xs font-mono px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 self-start md:self-auto shrink-0">
-                  該当: {filteredLibraryFormulas.length} / 213 公式
+                  該当: {filteredLibraryFormulas.length} / {MATH_FORMULAS.length} 公式
                 </span>
               </div>
 
@@ -1788,12 +1912,12 @@ export default function FourmulaStepsApp() {
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
                   <span className="text-slate-400 text-[11px] shrink-0 font-medium">科目:</span>
                   {[
-                    { id: 'all', label: 'すべて (213)' },
-                    { id: '数学Ⅰ', label: '数学Ⅰ (31)' },
-                    { id: '数学A', label: '数学A (34)' },
-                    { id: '数学Ⅱ', label: '数学Ⅱ (68)' },
-                    { id: '数学B', label: '数学B (51)' },
-                    { id: '数学Ⅲ', label: '数学Ⅲ (29)' },
+                    { id: 'all', label: `すべて (${MATH_FORMULAS.length})` },
+                    { id: '数学Ⅰ', label: `数学Ⅰ (${MATH_FORMULAS.filter(f => f.subject === '数学Ⅰ').length})` },
+                    { id: '数学A', label: `数学A (${MATH_FORMULAS.filter(f => f.subject === '数学A').length})` },
+                    { id: '数学Ⅱ', label: `数学Ⅱ (${MATH_FORMULAS.filter(f => f.subject === '数学Ⅱ').length})` },
+                    { id: '数学B', label: `数学B (${MATH_FORMULAS.filter(f => f.subject === '数学B').length})` },
+                    { id: '数学Ⅲ', label: `数学Ⅲ (${MATH_FORMULAS.filter(f => f.subject === '数学Ⅲ').length})` },
                   ].map((sub) => (
                     <button
                       key={sub.id}
@@ -1975,6 +2099,8 @@ export default function FourmulaStepsApp() {
                   ].map((item) => {
                     const stat = analysisStats[item.step];
                     const total = stat.total || 0;
+                    const ok = stat.ok || 0;
+                    const hint = stat.hint || 0;
                     const stuck = stat.stuck || 0;
                     const stuckRate = total > 0 ? Math.round((stuck / total) * 100) : 0;
 
@@ -1983,12 +2109,20 @@ export default function FourmulaStepsApp() {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-sm text-slate-100">{item.title}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded font-semibold border ${
-                              stuckRate > 50 ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
-                              stuckRate > 0 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                              'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 font-semibold">
+                              自力: {ok}
+                            </span>
+                            <span className="text-[11px] px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-700/60 font-semibold">
+                              ヒント: {hint}
+                            </span>
+                            <span className={`text-[11px] px-2 py-0.5 rounded font-bold border ${
+                              stuckRate > 50 ? 'bg-rose-500/20 text-rose-300 border-rose-500/50' :
+                              stuckRate > 0 ? 'bg-rose-950/80 text-rose-300 border-rose-700/60' :
+                              'bg-slate-800 text-slate-400 border-slate-700'
                             }`}>
-                              つまずき率: {stuckRate}% ({stuck}/{total}件)
+                              つまずき: {stuck} ({stuckRate}%)
                             </span>
                           </div>
                         </div>
