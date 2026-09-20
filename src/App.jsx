@@ -126,13 +126,12 @@ export function enrichFormulaWithCollection(formulaInput) {
 
   if (matched) {
     const rawLatex = matched.latex || formulaInput.latex || "";
-    const rawDesc = formulaInput.desc || (rawLatex ? `$$${rawLatex}$$` : matched.summary);
     return {
       id: matched.id,
       name: matched.name,
-      subject: matched.subject || formulaInput.subject || "高校数学",
-      category: matched.category || formulaInput.category || "公式",
-      desc: rawDesc.startsWith('$') || !rawDesc.includes('\\') ? rawDesc : `$$${rawDesc}$$`,
+      subject: matched.subject || formulaInput.subject || "数学B",
+      category: matched.category || formulaInput.category || "ベクトル",
+      desc: matched.latex ? `$$${matched.latex}$$` : (formulaInput.desc || matched.summary),
       latex: rawLatex,
       summary: matched.summary || "",
       body: matched.body || "",
@@ -144,6 +143,10 @@ export function enrichFormulaWithCollection(formulaInput) {
   const rawLatex = formulaInput.latex || (rawDesc.includes('\\') ? rawDesc : "");
   const formattedDesc = (rawDesc && !rawDesc.includes('$') && rawDesc.includes('\\')) ? `$$${rawDesc}$$` : rawDesc;
 
+  const autoBody = (formulaInput.body && formulaInput.body !== rawLatex && !formulaInput.body.startsWith('\\vec'))
+    ? formulaInput.body
+    : `【公式のポイントと活用法】\n本問の解法において参照された数学公式です。\n数式の条件や等式変形を正しく適用し、未知数の決定や証明を進める重要なステップとなります。`;
+
   return {
     id: formulaInput.id || `custom_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     name: name,
@@ -151,8 +154,8 @@ export function enrichFormulaWithCollection(formulaInput) {
     category: formulaInput.category || "公式",
     desc: formattedDesc,
     latex: rawLatex,
-    summary: formulaInput.summary || rawDesc,
-    body: formulaInput.body || rawDesc,
+    summary: "",
+    body: autoBody,
     isFromCollection: false
   };
 }
@@ -2245,24 +2248,27 @@ export default function FourmulaStepsApp() {
                 </h3>
 
                 {selectedLibraryFormula.latex && (
-                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono overflow-x-auto text-center py-4">
+                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 overflow-x-auto text-center py-5 shadow-inner">
                     <MathText text={`$$${selectedLibraryFormula.latex}$$`} />
                   </div>
                 )}
 
-                {selectedLibraryFormula.summary && (
-                  <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800 text-slate-300 leading-relaxed">
-                    <div className="font-semibold text-slate-200 mb-1 text-xs">【概要・ポイント】</div>
-                    <MathText text={selectedLibraryFormula.summary} />
-                  </div>
-                )}
-
-                <div className="bg-slate-950/90 p-4 rounded-xl border border-cyan-900/40 text-slate-200 leading-relaxed space-y-2 whitespace-pre-line font-sans">
-                  <div className="font-semibold text-cyan-300 mb-1 text-xs flex items-center gap-1.5">
+                <div className="bg-slate-950/90 p-5 rounded-xl border border-cyan-900/40 text-slate-200 leading-relaxed space-y-3 whitespace-pre-line font-sans text-xs sm:text-sm">
+                  <div className="font-semibold text-cyan-300 pb-2 border-b border-slate-800/80 flex items-center gap-1.5 text-xs sm:text-sm">
                     <BookOpen className="w-4 h-4 text-cyan-400" />
                     <span>【公式の解説・証明・活用法】</span>
                   </div>
-                  <MathText text={selectedLibraryFormula.body || selectedLibraryFormula.summary || selectedLibraryFormula.desc || "解説なし"} />
+                  <div className="pt-1 text-slate-300 leading-relaxed">
+                    <MathText text={
+                      (selectedLibraryFormula.body && selectedLibraryFormula.body !== selectedLibraryFormula.latex && !selectedLibraryFormula.body.startsWith('\\vec'))
+                        ? selectedLibraryFormula.body 
+                        : (selectedLibraryFormula.summary && selectedLibraryFormula.summary !== selectedLibraryFormula.latex && !selectedLibraryFormula.summary.startsWith('\\vec')
+                            ? selectedLibraryFormula.summary 
+                            : (selectedLibraryFormula.desc && !selectedLibraryFormula.desc.startsWith('\\vec')
+                                ? selectedLibraryFormula.desc 
+                                : "この公式の証明・解法のポイント・入試活用法は、下記の公式集一覧または関連問題の解説ステップをご参照ください。"))
+                    } />
+                  </div>
                 </div>
               </div>
 

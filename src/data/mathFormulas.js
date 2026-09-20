@@ -1920,6 +1920,51 @@ export const MATH_FORMULAS = [
     "latex": "L=\\int_a^b\\sqrt{1+\\{f'(x)\\}^2}\\,dx\\qquad(y=f(x),\\ a\\le x\\le b)",
     "summary": "曲線の微小部分の長さ $ds=\\sqrt{dx^2+dy^2}$ を積分することで曲線の全長が得られる。表示方法に応じて3通りの形がある。",
     "body": "曲線の微小部分の長さ $ds=\\sqrt{dx^2+dy^2}$ を積分することで曲線の全長が得られる。表示方法に応じて3通りの形がある。\n\n$$L=\\int_a^b\\sqrt{1+\\{f'(x)\\}^2}\\,dx\\qquad(y=f(x),\\ a\\le x\\le b)$$\n\n$$L=\\int_\\alpha^\\beta\\sqrt{\\left(\\frac{dx}{dt}\\right)^2+\\left(\\frac{dy}{dt}\\right)^2}\\,dt\\qquad(x=x(t),\\ y=y(t),\\ \\alpha\\le t\\le\\beta)$$\n\n$$L=\\int_\\alpha^\\beta\\sqrt{r^2+\\left(\\frac{dr}{d\\theta}\\right)^2}\\,d\\theta\\qquad(r=f(\\theta),\\ \\alpha\\le\\theta\\le\\beta\\ \\text{の極方程式})$$"
+  },
+  {
+    "id": "formula_214",
+    "subject": "数学B",
+    "category": "ベクトル",
+    "name": "共面条件（点が同一平面上にある条件）",
+    "latex": "\\overrightarrow{AP} = s\\overrightarrow{AB} + t\\overrightarrow{AC} \\quad または \\quad \\vec{p} = (1-s-t)\\vec{a} + s\\vec{b} + t\\vec{c}",
+    "summary": "4点 $A, B, C, P$ が同一平面上にある（共面である）ための必要十分条件。基準点を平面上にとる1次結合表示と、外にとる係数の和が1となる表示がある。",
+    "body": "【共面条件の基本性質】\n空間内の同一直線上にない3点 $A, B, C$ が定める平面上に点 $P$ がある（4点 $A, B, C, P$ が同一平面上にある）ための必要十分条件は、次の2通りの表現があります。\n\n1. 平面上の点（点 $A$）を基準とする場合（1次結合表示）：\n実数 $s, t$ を用いて、\n$$\\overrightarrow{AP} = s\\overrightarrow{AB} + t\\overrightarrow{AC}$$\nとただ一通りに表される。\n\n2. 空間内の任意の点（原点 $O$ など）を始点とする場合（係数の和が1）：\n実数 $s, t, u$ を用いて、\n$$\\vec{p} = (1-s-t)\\vec{a} + s\\vec{b} + t\\vec{c} \\qquad \\left( すなわち \\quad \\vec{p} = u\\vec{a} + s\\vec{b} + t\\vec{c}, \\quad u+s+t=1 \\right)$$\nと表される。\n\n【入試での典型的な解法・活用法】\n空間ベクトルにおいて「直線と平面の交点」を求める問題の最重要定石です。\n（例）点 $P$ が直線 $OD$ 上にあり、かつ平面 $ABC$ 上にあるとき：\n① 直線上の条件より、実数 $k$ を用いて $\\overrightarrow{OP} = k\\overrightarrow{OD}$ と表す。\n② これを基本ベクトル $\\overrightarrow{OA}, \\overrightarrow{OB}, \\overrightarrow{OC}$ で展開して整理する。\n③ 点 $P$ が平面 $ABC$ 上にあることから、「係数の和 $= 1$」の方程式を立てて未知数 $k$ を一意に決定する。"
+  },
+  {
+    "id": "formula_215",
+    "subject": "数学B",
+    "category": "ベクトル",
+    "name": "空間ベクトルの一次独立と分解の一意性",
+    "latex": "\\vec{p} = s\\vec{a} + t\\vec{b} + u\\vec{c} \\qquad (s, t, u \\text{ は一意の実数})",
+    "summary": "同一平面上にない4点に対し、3つのベクトルは一次独立であり、空間内の任意のベクトルはただ一通りに表せる。",
+    "body": "【空間の基底と分解の一意性】\n同一平面上にない4点 $O, A, B, C$ に対し、3つのベクトル $\\overrightarrow{OA}, \\overrightarrow{OB}, \\overrightarrow{OC}$ は一次独立です。\n\n空間内の任意のベクトル $\\vec{p}$ は、実数 $s, t, u$ を用いてただ一通りに表せます：\n$$\\vec{p} = s\\vec{a} + t\\vec{b} + u\\vec{c}$$\n\n【一次独立の性質】\n$$s\\vec{a} + t\\vec{b} + u\\vec{c} = \\vec{0} \\iff s = t = u = 0$$\n$$s\\vec{a} + t\\vec{b} + u\\vec{c} = s'\\vec{a} + t'\\vec{b} + u'\\vec{c} \\iff s=s', \\; t=t', \\; u=u'$$"
+  },
+  {
+    "id": "formula_216",
+    "subject": "数学B",
+    "category": "ベクトル",
+    "name": "点と平面の距離公式（空間）",
+    "latex": "d = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2 + b^2 + c^2}}",
+    "summary": "点 $(x_0, y_0, z_0)$ と平面 $ax + by + cz + d = 0$ の距離を求める公式。四面体の高さ計算などに有効。",
+    "body": "【点と平面の距離公式】\n空間内の点 $(x_0, y_0, z_0)$ と平面 $ax + by + cz + d = 0$ との距離 $d$ は次式で与えられます：\n$$d = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2 + b^2 + c^2}}$$\n\n【入試活用のポイント】\n平面の法線ベクトル $\\vec{n} = (a, b, c)$ を利用した強力な公式です。四面体の高さを求めて体積を瞬時に計算する場合や、球が平面から切り取る円の半径を計算する際に極めて有効です。"
+  },
+  {
+    "id": "formula_217",
+    "subject": "数学B",
+    "category": "ベクトル",
+    "name": "平面のベクトル方程式",
+    "latex": "\\vec{n}\\cdot(\\vec{p}-\\vec{a})=0 \\qquad \\text{または} \\qquad ax+by+cz+d=0",
+    "summary": "定点を通り法線ベクトルに垂直な平面の表し方。成分表示により $ax+by+cz+d=0$ となる。",
+    "body": "【平面のベクトル方程式】\n定点 $A(\\vec{a})$ を通り、法線ベクトル $\\vec{n} = (a, b, c) \\neq \\vec{0}$ に垂直な平面上の任意の点 $P(\\vec{p})$ は次を満たします：\n$$\\vec{n} \\cdot (\\vec{p} - \\vec{a}) = 0$$\n\n各成分を代入して展開すると、空間における平面の方程式：\n$$a(x-x_0) + b(y-y_0) + c(z-z_0) = 0 \\iff ax + by + cz + d = 0$$\nが得られます。"
+  },
+  {
+    "id": "formula_218",
+    "subject": "数学B",
+    "category": "ベクトル",
+    "name": "球面のベクトル方程式",
+    "latex": "|\\vec{p}-\\vec{c}|=r \\qquad \\text{または} \\qquad (x-a)^2+(y-b)^2+(z-c)^2=r^2",
+    "summary": "中心と半径による球面の表し方、および直径の両端を与えられた場合の表し方。",
+    "body": "【球面のベクトル方程式】\n中心 $C(\\vec{c})$、半径 $r$ の球面上の点 $P(\\vec{p})$ のベクトル方程式：\n$$|\\vec{p} - \\vec{c}| = r \\iff (\\vec{p} - \\vec{c}) \\cdot (\\vec{p} - \\vec{c}) = r^2$$\n\n中心 $(a, b, c)$、半径 $r$ の座標表示：\n$$(x-a)^2 + (y-b)^2 + (z-c)^2 = r^2$$\n\nまた、線分 $AB$ を直径とする球面の方程式は：\n$$(\\vec{p} - \\vec{a}) \\cdot (\\vec{p} - \\vec{b}) = 0$$\nで表されます。"
   }
 ];
 
@@ -1930,6 +1975,12 @@ export const MATH_FORMULAS = [
 export function findFormulaInCollection(queryName) {
   if (!queryName) return null;
   const q = queryName.trim().toLowerCase();
+
+  // 共面条件・平面上の点のキーワードエイリアス判定
+  if (q.includes("共面") || q.includes("同一平面") || (q.includes("平面") && q.includes("点") && q.includes("条件"))) {
+    const coplanar = MATH_FORMULAS.find(f => f.name.includes("共面条件"));
+    if (coplanar) return coplanar;
+  }
 
   // 1. 完全一致
   let found = MATH_FORMULAS.find(f => f.name.toLowerCase() === q);
