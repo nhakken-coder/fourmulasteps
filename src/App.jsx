@@ -898,69 +898,73 @@ export default function FourmulaStepsApp() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 md:p-8 pb-24">
-      <header className="max-w-5xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              setViewMode('lp');
-              if (typeof window !== 'undefined') {
-                window.location.hash = '#lp';
-                window.scrollTo(0, 0);
-              }
-            }}
-            className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-750 border border-slate-700/80 rounded-lg transition flex items-center gap-1.5 shadow-sm shrink-0"
-            title="公式紹介LPページへ戻る"
-          >
-            <span>←</span>
-            <span>公式LPへ</span>
-          </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="bg-indigo-600 text-white font-black px-2 py-1 rounded text-sm tracking-wider">4STEPS</span>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                fourmulasteps
-              </h1>
-              {isSupabaseConfigured && (
-                <span className="text-[10px] text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                  クラウド同期
-                </span>
-              )}
+      <header className="max-w-5xl mx-auto mb-6 border-b border-slate-800 pb-4 space-y-3">
+        {/* 上段: ロゴ・LP戻るボタン & ユーザー情報 */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                setViewMode('lp');
+                if (typeof window !== 'undefined') {
+                  window.location.hash = '#lp';
+                  window.scrollTo(0, 0);
+                }
+              }}
+              className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700/80 rounded-lg transition flex items-center gap-1.5 shadow-sm shrink-0"
+              title="公式紹介LPページへ戻る"
+            >
+              <span>←</span>
+              <span>公式LPへ</span>
+            </button>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-indigo-600 text-white font-black px-2 py-0.5 rounded text-xs sm:text-sm tracking-wider shrink-0">4STEPS</span>
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent shrink-0">
+                  fourmulasteps
+                </h1>
+                {isSupabaseConfigured && (
+                  <span className="text-[10px] text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium shrink-0 whitespace-nowrap">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                    クラウド同期
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">難関大数学 ゴール逆算型 思考プロセス体系化アプリ</p>
             </div>
-            <p className="text-xs text-slate-400 mt-1">難関大数学 ゴール逆算型 思考プロセス体系化アプリ</p>
           </div>
+
+          {/* ログインユーザー情報・ログアウト */}
+          {currentUser?.email ? (
+            <div className="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+              <span className="text-slate-200 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
+                {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-bold shrink-0">
+                {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
+              </span>
+              <button
+                onClick={async () => {
+                  await signOutUser();
+                  setCurrentUser(null);
+                  setUserProfile(null);
+                  setViewMode('lp');
+                }}
+                title="ログアウトしてLPに戻る"
+                className="text-slate-400 hover:text-rose-400 p-1 ml-0.5 rounded hover:bg-slate-700/60 transition"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        {/* ログインユーザー情報・ログアウト */}
-        {currentUser?.email ? (
-          <div className="flex items-center gap-2 self-end sm:self-center bg-slate-800/80 border border-slate-700/80 px-2.5 py-1 rounded-lg text-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span className="text-slate-300 font-medium">
-              {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 font-bold">
-              {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
-            </span>
-            <button
-              onClick={async () => {
-                await signOutUser();
-                setCurrentUser(null);
-                setUserProfile(null);
-                setViewMode('lp');
-              }}
-              title="ログアウトしてLPに戻る"
-              className="text-slate-400 hover:text-rose-400 p-1 ml-1 rounded transition"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ) : null}
-
-        <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700 text-xs sm:text-sm flex-wrap">
+        {/* 下段: ナビゲーションタブ */}
+        <div className="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs sm:text-sm flex-wrap gap-1 shadow-inner">
           <button
             onClick={() => setActiveTab('solve')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition cursor-pointer ${
-              activeTab === 'solve' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+              activeTab === 'solve' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
             }`}
           >
             <BookOpen className="w-4 h-4" />
@@ -968,7 +972,7 @@ export default function FourmulaStepsApp() {
           </button>
           <button
             onClick={() => setActiveTab('similar')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
               activeTab === 'similar' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/50' : 'text-emerald-400 hover:text-emerald-300'
             }`}
           >
@@ -980,7 +984,7 @@ export default function FourmulaStepsApp() {
               setInputMode('image');
               setActiveTab('scan');
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md font-bold transition cursor-pointer shadow-sm ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer shadow-sm ${
               activeTab === 'scan'
                 ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 text-white shadow-indigo-500/25 ring-1 ring-cyan-400/50'
                 : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border border-cyan-800/60'
@@ -991,8 +995,8 @@ export default function FourmulaStepsApp() {
           </button>
           <button
             onClick={() => setActiveTab('formulas')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition ${
-              activeTab === 'formulas' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
+              activeTab === 'formulas' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
             }`}
           >
             <Library className="w-4 h-4 text-cyan-400" />
@@ -1000,8 +1004,8 @@ export default function FourmulaStepsApp() {
           </button>
           <button
             onClick={() => setActiveTab('analysis')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition ${
-              activeTab === 'analysis' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition ${
+              activeTab === 'analysis' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'
             }`}
           >
             <BarChart2 className="w-4 h-4 text-cyan-400" />
