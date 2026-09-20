@@ -92,6 +92,8 @@ export default function AuthModal({
       let msg = err.message || '認証エラーが発生しました';
       if (msg.includes('already registered') || msg.includes('User already registered')) {
         msg = 'このメールアドレスは既に登録されています。「ログイン」タブをお試しいただくか、正しいパスワードを入力してください。';
+      } else if (msg.includes('Email not confirmed')) {
+        msg = 'メールアドレスの確認が完了していません。Supabase管理画面でメール確認（Confirm email）をオフにするか、登録メールに届いた確認リンクを開いてください。';
       } else if (msg.includes('Invalid login credentials')) {
         msg = 'メールアドレスまたはパスワードが正しくありません。';
       } else if (msg.includes('Password should be at least')) {
