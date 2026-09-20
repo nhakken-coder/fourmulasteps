@@ -50,7 +50,7 @@ export async function signUpWithEmail(email, password, displayName = '受験生'
 
   const origin = typeof window !== 'undefined' && window.location.origin 
     ? window.location.origin 
-    : 'https://fourmulasteps-app.vercel.app';
+    : 'https://fourmulasteps.com';
 
   const { data, error } = await supabase.auth.signUp({
     email,
