@@ -49,20 +49,38 @@ import {
   LogOut
 } from 'lucide-react';
 
+/**
+ * 文字列内のエスケープされた改行（\n, \\n）やスラッシュ改行（/n）を
+ * 正常な改行文字（\n）へ統一正規化する関数。
+ * ※ LaTeXの \neq, \nu, \notin などのコマンドを破壊しないよう、\nの直後に英字が続く場合は除外。
+ */
+export function normalizeLineBreaks(str) {
+  if (!str) return '';
+  if (typeof str !== 'string') return String(str);
+  return str
+    .replace(/\/n/g, '\n')
+    .replace(/\\\\n/g, '\n')
+    .replace(/\\n(?![a-zA-Z])/g, '\n');
+}
+
 const MathText = ({ text }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (!containerRef.current || !text) return;
+    if (!containerRef.current) return;
+    if (text === null || text === undefined || text === '') {
+      containerRef.current.innerHTML = '';
+      return;
+    }
 
-    let targetText = String(text).trim();
+    let targetText = normalizeLineBreaks(String(text).trim());
 
     // $ も $$ も含まないが、LaTeXのバックスラッシュ記法（\vec, \frac, \text 等）を含む場合、
-    // 全体を数式として扱う
+    // 全体を数式として扱う（複数行テキストを除く）
     if (!targetText.includes('$')) {
       const hasLatex = /\\[a-zA-Z]+|\^|_|\\{/.test(targetText);
       const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(targetText);
-      if (hasLatex && !hasJapanese) {
+      if (hasLatex && !hasJapanese && !targetText.includes('\n')) {
         targetText = `$$${targetText}$$`;
       }
     }
@@ -73,14 +91,14 @@ const MathText = ({ text }) => {
     parts.forEach(part => {
       if (part.startsWith('$$') && part.endsWith('$$')) {
         const math = part.slice(2, -2).trim();
-        const span = document.createElement('div');
-        span.className = "my-2 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
+        const div = document.createElement('div');
+        div.className = "my-2 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
         try {
-          katex.render(math, span, { displayMode: true, throwOnError: false });
+          katex.render(math, div, { displayMode: true, throwOnError: false });
         } catch {
-          span.innerText = part;
+          div.innerText = part;
         }
-        containerRef.current.appendChild(span);
+        containerRef.current.appendChild(div);
       } else if (part.startsWith('$') && part.endsWith('$')) {
         const math = part.slice(1, -1).trim();
         const span = document.createElement('span');
@@ -91,28 +109,39 @@ const MathText = ({ text }) => {
           span.innerText = part;
         }
         containerRef.current.appendChild(span);
-      } else if (part.trim() !== '') {
-        const hasRawLatex = /\\[a-zA-Z]+/.test(part);
-        const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(part);
-        if (hasRawLatex && !hasJapanese) {
-          const span = document.createElement('div');
-          span.className = "my-1 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
+      } else if (part.trim() !== '' || part.includes('\n')) {
+        const normalizedPart = normalizeLineBreaks(part);
+        const hasRawLatex = /\\[a-zA-Z]+/.test(normalizedPart);
+        const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(normalizedPart);
+        if (hasRawLatex && !hasJapanese && !normalizedPart.includes('\n')) {
+          const div = document.createElement('div');
+          div.className = "my-1 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
           try {
-            katex.render(part.trim(), span, { displayMode: true, throwOnError: false });
-            containerRef.current.appendChild(span);
+            katex.render(normalizedPart.trim(), div, { displayMode: true, throwOnError: false });
+            containerRef.current.appendChild(div);
             return;
           } catch {
             // pass
           }
         }
-        const span = document.createElement('span');
-        span.innerText = part;
-        containerRef.current.appendChild(span);
+
+        // 改行（\n）ごとに行分割し、<br /> を確実に挟みながらテキストを追加
+        const lines = normalizedPart.split('\n');
+        lines.forEach((line, index) => {
+          if (line) {
+            const span = document.createElement('span');
+            span.innerText = line;
+            containerRef.current.appendChild(span);
+          }
+          if (index < lines.length - 1) {
+            containerRef.current.appendChild(document.createElement('br'));
+          }
+        });
       }
     });
   }, [text]);
 
-  return <span ref={containerRef} className="leading-relaxed inline" />;
+  return <span ref={containerRef} className="leading-relaxed inline whitespace-pre-line break-words" />;
 };
 
 /**
@@ -130,20 +159,20 @@ export function enrichFormulaWithCollection(formulaInput) {
       name: matched.name,
       subject: matched.subject || formulaInput.subject || "数学B",
       category: matched.category || formulaInput.category || "ベクトル",
-      desc: matched.latex ? `$$${matched.latex}$$` : (formulaInput.desc || matched.summary),
+      desc: matched.latex ? `$$${matched.latex}$$` : normalizeLineBreaks(formulaInput.desc || matched.summary),
       latex: rawLatex,
-      summary: matched.summary || "",
-      body: matched.body || "",
+      summary: normalizeLineBreaks(matched.summary || ""),
+      body: normalizeLineBreaks(matched.body || ""),
       isFromCollection: true
     };
   }
 
   const rawDesc = formulaInput.desc || formulaInput.latex || "";
   const rawLatex = formulaInput.latex || (rawDesc.includes('\\') ? rawDesc : "");
-  const formattedDesc = (rawDesc && !rawDesc.includes('$') && rawDesc.includes('\\')) ? `$$${rawDesc}$$` : rawDesc;
+  const formattedDesc = (rawDesc && !rawDesc.includes('$') && rawDesc.includes('\\')) ? `$$${rawDesc}$$` : normalizeLineBreaks(rawDesc);
 
   const autoBody = (formulaInput.body && formulaInput.body !== rawLatex && !formulaInput.body.startsWith('\\vec'))
-    ? formulaInput.body
+    ? normalizeLineBreaks(formulaInput.body)
     : `【公式のポイントと活用法】\n本問の解法において参照された数学公式です。\n数式の条件や等式変形を正しく適用し、未知数の決定や証明を進める重要なステップとなります。`;
 
   return {
@@ -719,15 +748,16 @@ function FourmulaStepsAppInner() {
           const reg = new RegExp(`"${fieldName}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 's');
           const match = text.match(reg);
           if (match) {
-            return match[1]
-              .replace(/\\n/g, '\n')
-              .replace(/\\"/g, '"')
-              .replace(/\\\\/g, '\\');
+            return normalizeLineBreaks(
+              match[1]
+                .replace(/\\"/g, '"')
+                .replace(/\\\\/g, '\\')
+            );
           }
           const regLoose = new RegExp(`"${fieldName}"\\s*:\\s*"([\\s\\S]*?)"(?=\\s*,|\\s*})`, 'm');
           const matchLoose = text.match(regLoose);
           if (matchLoose) {
-            return matchLoose[1].replace(/\\"/g, '"');
+            return normalizeLineBreaks(matchLoose[1].replace(/\\"/g, '"'));
           }
           return '';
         };
@@ -793,10 +823,10 @@ function FourmulaStepsAppInner() {
 
               if (endBracket !== -1) {
                 const arrayString = text.substring(startBracket, endBracket + 1);
-                const sanitizedArray = arrayString
-                  .replace(/\r\n/g, '\n')
-                  .replace(/\\(?!["])/g, '\\\\');
                 try {
+                  const sanitizedArray = arrayString
+                    .replace(/\r\n/g, '\n')
+                    .replace(/\\(?!["])/g, '\\\\');
                   const parsed = JSON.parse(sanitizedArray);
                   if (Array.isArray(parsed) && parsed.length > 0) {
                     result.similarProblems = parsed;
@@ -807,7 +837,7 @@ function FourmulaStepsAppInner() {
                     const extracted = objectMatches.map(objStr => {
                       const getProp = (prop) => {
                         const m = objStr.match(new RegExp(`"${prop}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 's'));
-                        return m ? m[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\') : '';
+                        return m ? normalizeLineBreaks(m[1].replace(/\\"/g, '"').replace(/\\\\/g, '\\')) : '';
                       };
                       return {
                         title: getProp('title') || '類似問題',
@@ -831,7 +861,27 @@ function FourmulaStepsAppInner() {
         return result;
       };
 
-      const data = serverData || parseProblemData(rawText);
+      // 全テキストフィールドを再帰的にサニタイズ（/n や \n を正規化）
+      const sanitizeAllStrings = (obj) => {
+        if (!obj || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) {
+          return obj.map(item => sanitizeAllStrings(item));
+        }
+        const cleaned = {};
+        for (const [key, val] of Object.entries(obj)) {
+          if (typeof val === 'string') {
+            cleaned[key] = normalizeLineBreaks(val);
+          } else if (typeof val === 'object' && val !== null) {
+            cleaned[key] = sanitizeAllStrings(val);
+          } else {
+            cleaned[key] = val;
+          }
+        }
+        return cleaned;
+      };
+
+      const rawParsedData = serverData || parseProblemData(rawText);
+      const data = sanitizeAllStrings(rawParsedData);
 
       // 類似問題が2問未満だった場合の思考定着フォールバック
       let finalSimilarProblems = (data.similarProblems && Array.isArray(data.similarProblems))
