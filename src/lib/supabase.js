@@ -362,6 +362,45 @@ export async function fetchAiUsageHistory() {
 }
 
 /**
+ * 当月（1日0時以降）のAI解析実行数を取得
+ */
+export async function fetchMonthlyUsageCount() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  if (!supabase) {
+    try {
+      const history = JSON.parse(localStorage.getItem('fourmulasteps_ai_history') || '[]');
+      const count = history.filter(h => h.createdAt && h.createdAt >= startOfMonth).length;
+      return count;
+    } catch {
+      return 0;
+    }
+  }
+
+  try {
+    const user = await getOrCreateUser();
+    if (!user) return 0;
+
+    const { count, error } = await supabase
+      .from('ai_usage_logs')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .gte('created_at', startOfMonth);
+
+    if (error) {
+      console.warn('fetchMonthlyUsageCount error:', error.message);
+      const history = JSON.parse(localStorage.getItem('fourmulasteps_ai_history') || '[]');
+      return history.filter(h => h.createdAt && h.createdAt >= startOfMonth).length;
+    }
+    return count || 0;
+  } catch (err) {
+    console.warn('fetchMonthlyUsageCount error:', err);
+    return 0;
+  }
+}
+
+/**
  * 問題を Supabase に保存
  */
 export async function saveProblemToSupabase(problem) {
@@ -383,8 +422,16 @@ export async function saveProblemToSupabase(problem) {
       formulas: problem.formulas || [],
       alternative_solution: problem.alternativeSolution || '',
       similar_problems: problem.similarProblems || [],
+      created_at: problem.createdAt || new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
+
+    // ローカルストレージにもバックアップ
+    try {
+      const saved = JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+      const filtered = saved.filter(p => p.id !== problem.id);
+      localStorage.setItem('fourmulasteps_local_problems', JSON.stringify([problem, ...filtered].slice(0, 100)));
+    } catch {}
 
     const { data, error } = await supabase
       .from('problems')
@@ -407,10 +454,22 @@ export async function saveProblemToSupabase(problem) {
  * Supabase からユーザーの問題一覧を取得
  */
 export async function fetchProblemsFromSupabase() {
-  if (!supabase) return [];
+  if (!supabase) {
+    try {
+      return JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+    } catch {
+      return [];
+    }
+  }
   try {
     const user = await getOrCreateUser();
-    if (!user) return [];
+    if (!user) {
+      try {
+        return JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+      } catch {
+        return [];
+      }
+    }
 
     const { data, error } = await supabase
       .from('problems')
@@ -419,10 +478,14 @@ export async function fetchProblemsFromSupabase() {
 
     if (error) {
       console.error('Failed to fetch problems from Supabase:', error.message);
-      return [];
+      try {
+        return JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+      } catch {
+        return [];
+      }
     }
 
-    return (data || []).map(row => ({
+    const list = (data || []).map(row => ({
       id: row.id,
       title: row.title,
       university: row.university,
@@ -433,11 +496,46 @@ export async function fetchProblemsFromSupabase() {
       steps: row.steps,
       formulas: row.formulas,
       alternativeSolution: row.alternative_solution,
-      similarProblems: row.similar_problems
+      similarProblems: row.similar_problems,
+      folder: row.folder || '未分類',
+      createdAt: row.created_at || new Date().toISOString()
     }));
+
+    // ローカルキャッシュも同期
+    try {
+      localStorage.setItem('fourmulasteps_local_problems', JSON.stringify(list.slice(0, 100)));
+    } catch {}
+
+    return list;
   } catch (err) {
     console.error('fetchProblemsFromSupabase error:', err);
-    return [];
+    try {
+      return JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+    } catch {
+      return [];
+    }
+  }
+}
+
+/**
+ * 問題を削除
+ */
+export async function deleteProblemFromSupabase(problemId) {
+  try {
+    const saved = JSON.parse(localStorage.getItem('fourmulasteps_local_problems') || '[]');
+    localStorage.setItem('fourmulasteps_local_problems', JSON.stringify(saved.filter(p => p.id !== problemId)));
+  } catch {}
+
+  if (!supabase) return true;
+  try {
+    const user = await getOrCreateUser();
+    if (!user) return true;
+
+    await supabase.from('problems').delete().eq('id', problemId).eq('user_id', user.id);
+    return true;
+  } catch (err) {
+    console.warn('deleteProblemFromSupabase error:', err);
+    return false;
   }
 }
 

@@ -12,6 +12,8 @@ import {
 import { MATH_FORMULAS, findFormulaInCollection } from './data/mathFormulas';
 import { GEMINI_API_KEY, GEMINI_MODEL } from './config';
 import LandingPage from './components/LandingPage';
+import MyPage from './components/MyPage';
+import AuthModal from './components/AuthModal';
 import { 
   supabase,
   isSupabaseConfigured, 
@@ -23,7 +25,8 @@ import {
   recordWeaknessLog,
   fetchUserProfile,
   getCurrentUser,
-  signOutUser
+  signOutUser,
+  fetchMonthlyUsageCount
 } from './lib/supabase';
 import { 
   ChevronDown, 
@@ -46,7 +49,11 @@ import {
   Library,
   X,
   PlusCircle,
-  LogOut
+  LogOut,
+  User,
+  Lock,
+  Printer,
+  Crown
 } from 'lucide-react';
 
 /**
@@ -395,6 +402,9 @@ function FourmulaStepsAppInner() {
 
   const [userProfile, setUserProfile] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [monthlyUsageCount, setMonthlyUsageCount] = useState(0);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeTargetPlan, setUpgradeTargetPlan] = useState('premium');
 
   const [paymentNotice, setPaymentNotice] = useState(null); // { message, plan }
 
@@ -409,6 +419,7 @@ function FourmulaStepsAppInner() {
         setCurrentUser(session?.user || null);
         if (session?.user) {
           fetchUserProfile().then(p => p && setUserProfile(p));
+          fetchMonthlyUsageCount().then(c => setMonthlyUsageCount(c));
         }
       });
       return () => subscription.unsubscribe();
@@ -426,6 +437,7 @@ function FourmulaStepsAppInner() {
 
       // WebhookによるSupabaseプロファイル反映をリフレッシュ（即時＋2秒後）
       fetchUserProfile().then(p => p && setUserProfile(p));
+      fetchMonthlyUsageCount().then(c => setMonthlyUsageCount(c));
       const timer = setTimeout(() => {
         fetchUserProfile().then(p => p && setUserProfile(p));
       }, 2500);
@@ -442,15 +454,16 @@ function FourmulaStepsAppInner() {
     }
   }, []);
 
-  // 問題データ、ステップログ、プロファイルを同期・ロード
+  // 問題データ、ステップログ、プロファイル、当月利用数を同期・ロード
   useEffect(() => {
     let isMounted = true;
     const loadInitialData = async () => {
       try {
-        const [remoteProblems, remoteLogs, profile] = await Promise.all([
+        const [remoteProblems, remoteLogs, profile, usageCount] = await Promise.all([
           fetchProblemsFromSupabase(),
           fetchStepLogsFromSupabase(),
-          fetchUserProfile()
+          fetchUserProfile(),
+          fetchMonthlyUsageCount()
         ]);
         if (!isMounted) return;
 
@@ -468,6 +481,7 @@ function FourmulaStepsAppInner() {
           }));
         }
         if (profile) setUserProfile(profile);
+        if (typeof usageCount === 'number') setMonthlyUsageCount(usageCount);
       } catch (err) {
         console.warn('Initial data load error:', err);
       }
@@ -630,6 +644,16 @@ function FourmulaStepsAppInner() {
   };
 
   const handleAnalyze = async () => {
+    const plan = userProfile?.plan || 'free';
+    const monthlyLimit = plan === 'premium' ? 300 : plan === 'standard' ? 100 : 3;
+
+    if (monthlyUsageCount >= monthlyLimit) {
+      setUpgradeTargetPlan(plan === 'standard' ? 'premium' : 'standard');
+      setShowUpgradeModal(true);
+      setErrorMsg(`今月のAI解析上限（${monthlyLimit}問）に達しました。プレミアムプランにアップグレードすると月300問までご利用いただけます。`);
+      return;
+    }
+
     const cleanApiKey = getEffectiveApiKey();
     if (!cleanApiKey) {
       setErrorMsg('AI解析に必要な API キーが設定されていません。src/config.js または .env ファイルに API キーを記述してください。');
@@ -974,6 +998,7 @@ function FourmulaStepsAppInner() {
         status: 'success'
       }).then(() => {
         fetchUserProfile().then(p => p && setUserProfile(p));
+        setMonthlyUsageCount(prev => prev + 1);
       });
 
       setExpandedFormulaIds([]);
@@ -1130,13 +1155,19 @@ function FourmulaStepsAppInner() {
           {/* ログインユーザー情報・ログアウト */}
           {currentUser?.email ? (
             <div className="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-              <span className="text-slate-200 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
-                {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-bold shrink-0">
-                {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
-              </span>
+              <button
+                onClick={() => setActiveTab('mypage')}
+                className="flex items-center gap-2 text-left hover:opacity-80 transition cursor-pointer"
+                title="マイページを開く"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                <span className="text-slate-200 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
+                  {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-bold shrink-0">
+                  {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
+                </span>
+              </button>
               <button
                 onClick={async () => {
                   await signOutUser();
@@ -1191,6 +1222,15 @@ function FourmulaStepsAppInner() {
             >
               <BarChart2 className="w-4 h-4 text-cyan-400" />
               弱点分析
+            </button>
+            <button
+              onClick={() => setActiveTab('mypage')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                activeTab === 'mypage' ? 'bg-[#E05A36] text-white shadow-lg shadow-[#E05A36]/30' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <User className="w-4 h-4 text-orange-300" />
+              マイページ
             </button>
           </div>
 
@@ -1482,7 +1522,28 @@ function FourmulaStepsAppInner() {
                 </button>
                 {showAlt && (
                   <div className="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-200 bg-slate-900/90 p-4 rounded-xl border border-slate-700/60 leading-relaxed font-sans whitespace-pre-line animate-in fade-in duration-200">
-                    <MathText text={currentProblem.alternativeSolution || "別解アプローチが設定されていません。"} />
+                    {userProfile?.plan === 'free' ? (
+                      <div className="p-4 bg-slate-950/80 rounded-xl border border-indigo-900/40 text-center space-y-3">
+                        <div className="text-amber-400 font-bold text-sm flex items-center justify-center gap-2">
+                          <Lock className="w-4 h-4" />
+                          <span>別解・検算アプローチは有料会員限定機能です</span>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          別解の全ルート網羅や検算のテクニックを確認するには、一般会員またはプレミアム会員へアップグレードしてください。
+                        </p>
+                        <button
+                          onClick={() => {
+                            setUpgradeTargetPlan('standard');
+                            setShowUpgradeModal(true);
+                          }}
+                          className="py-2 px-4 bg-gradient-to-r from-indigo-600 to-[#E05A36] text-white font-bold rounded-lg text-xs hover:opacity-90 transition"
+                        >
+                          有料プランで別解を確認する
+                        </button>
+                      </div>
+                    ) : (
+                      <MathText text={currentProblem.alternativeSolution || "別解アプローチが設定されていません。"} />
+                    )}
                   </div>
                 )}
               </div>
@@ -1512,6 +1573,31 @@ function FourmulaStepsAppInner() {
                 {currentProblem.similarProblems && currentProblem.similarProblems.length > 0 ? (
                   <div className="space-y-4 pt-1">
                     {currentProblem.similarProblems.map((sim, idx) => {
+                      const isLocked = idx > 0 && userProfile?.plan !== 'premium';
+                      if (isLocked) {
+                        return (
+                          <div key={idx} className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-900/60 rounded-xl p-5 text-center space-y-3 shadow-lg">
+                            <div className="flex items-center justify-center gap-2 text-[#E05A36] font-bold text-sm">
+                              <Lock className="w-4 h-4" />
+                              <span>類似問題 2（実戦・応用発展題）はプレミアム会員限定です</span>
+                            </div>
+                            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                              基礎定着から難関大実戦レベルまで引き上げる第2の類題演習と解法アプローチは、プレミアム会員のみご利用いただけます。
+                            </p>
+                            <button
+                              onClick={() => {
+                                setUpgradeTargetPlan('premium');
+                                setShowUpgradeModal(true);
+                              }}
+                              className="py-2 px-5 bg-gradient-to-r from-[#E05A36] to-amber-600 hover:from-[#C84826] hover:to-amber-700 text-white font-bold rounded-lg text-xs shadow-md transition inline-flex items-center gap-1.5"
+                            >
+                              <Crown className="w-3.5 h-3.5" />
+                              <span>プレミアムで応用類題を解放する</span>
+                            </button>
+                          </div>
+                        );
+                      }
+
                       const isOpen = openSimilarProblems.includes(idx);
                       return (
                         <div key={idx} className="bg-slate-900/95 border border-slate-700/90 rounded-xl p-5 space-y-3.5 transition shadow-lg">
@@ -1838,6 +1924,31 @@ function FourmulaStepsAppInner() {
               {currentProblem.similarProblems && currentProblem.similarProblems.length > 0 ? (
                 <div className="space-y-6">
                   {currentProblem.similarProblems.map((sim, idx) => {
+                    const isLocked = idx > 0 && userProfile?.plan !== 'premium';
+                    if (isLocked) {
+                      return (
+                        <div key={idx} className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-900/60 rounded-xl p-8 text-center space-y-4 shadow-xl">
+                          <div className="flex items-center justify-center gap-2 text-[#E05A36] font-bold text-base">
+                            <Lock className="w-5 h-5" />
+                            <span>類似問題 2（実戦・応用発展題）はプレミアム会員限定です</span>
+                          </div>
+                          <p className="text-xs text-slate-400 max-w-lg mx-auto leading-relaxed">
+                            基礎定着から難関大実戦レベルまで引き上げる第2の類題演習と解法アプローチは、プレミアム会員のみご利用いただけます。
+                          </p>
+                          <button
+                            onClick={() => {
+                              setUpgradeTargetPlan('premium');
+                              setShowUpgradeModal(true);
+                            }}
+                            className="py-2.5 px-6 bg-gradient-to-r from-[#E05A36] to-amber-600 hover:from-[#C84826] hover:to-amber-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition inline-flex items-center gap-2"
+                          >
+                            <Crown className="w-4 h-4" />
+                            <span>プレミアムで応用類題を解放する</span>
+                          </button>
+                        </div>
+                      );
+                    }
+
                     const isOpen = openSimilarProblems.includes(idx);
                     return (
                       <div key={idx} className="bg-slate-900/90 border border-slate-700/90 rounded-xl p-6 space-y-4 shadow-xl">
@@ -2410,6 +2521,32 @@ function FourmulaStepsAppInner() {
           </div>
         )}
 
+        {/* マイページ画面 */}
+        {activeTab === 'mypage' && (
+          <MyPage
+            user={currentUser}
+            userProfile={userProfile}
+            monthlyUsageCount={monthlyUsageCount}
+            problems={problems}
+            setProblems={setProblems}
+            userLogs={userLogs}
+            onSelectProblem={(problemId) => {
+              setSelectedProblemId(problemId);
+              setActiveTab('solve');
+            }}
+            onOpenUpgrade={() => {
+              setUpgradeTargetPlan(userProfile?.plan === 'standard' ? 'premium' : 'standard');
+              setShowUpgradeModal(true);
+            }}
+            onLogout={async () => {
+              await signOutUser();
+              setCurrentUser(null);
+              setUserProfile(null);
+              setViewMode('lp');
+            }}
+          />
+        )}
+
         {/* 公式詳細モーダル */}
         {selectedLibraryFormula && (
           <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -2504,7 +2641,123 @@ function FourmulaStepsAppInner() {
             </div>
           </div>
         )}
+
+        {/* アップグレード / 認証モーダル */}
+        <AuthModal
+          isOpen={showUpgradeModal}
+          initialMode="checkout"
+          targetPlan={upgradeTargetPlan}
+          onClose={() => setShowUpgradeModal(false)}
+          onSuccess={(newPlan) => {
+            setShowUpgradeModal(false);
+            setUserProfile(prev => ({ ...(prev || {}), plan: newPlan }));
+          }}
+        />
+
+        {/* プレミアム特典: マイ弱点克服ノート A4印刷用レイアウト（ブラウザ印刷時のみ表示） */}
+        <div className="print-only-notebook p-8 max-w-4xl mx-auto text-black hidden print:block">
+          <div className="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
+            <div>
+              <div className="text-xs font-bold tracking-widest text-gray-500 uppercase">fourmulasteps Premium</div>
+              <h1 className="text-2xl font-black mt-1">マイ弱点克服ノート</h1>
+              <p className="text-xs text-gray-600 mt-0.5">つまずきステップの思考プロセス ＆ 連動公式まとめ</p>
+            </div>
+            <div className="text-right text-xs text-gray-600">
+              <div>出力日: {new Date().toLocaleDateString('ja-JP')}</div>
+              <div>ユーザー: {currentUser?.user_metadata?.full_name || currentUser?.email || '会員'}</div>
+              <div>会員プラン: {userProfile?.plan === 'premium' ? 'プレミアム会員' : '一般会員'}</div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {problems.filter(p => {
+              const logs = userLogs[p.id] || {};
+              return Object.values(logs).some(s => s === 'stuck');
+            }).length === 0 ? (
+              <div className="p-6 border border-dashed border-gray-400 rounded-lg text-center text-sm text-gray-600">
+                つまずきとして記録された問題はありません。日々の演習で「ここでつまずいた」を記録すると、ここに弱点特訓ノートが生成されます。
+              </div>
+            ) : (
+              problems
+                .filter(p => {
+                  const logs = userLogs[p.id] || {};
+                  return Object.values(logs).some(s => s === 'stuck');
+                })
+                .map((p, idx) => (
+                  <div key={p.id} className="border border-gray-400 rounded-lg p-5 break-inside-avoid space-y-3 mb-6 bg-white">
+                    <div className="flex justify-between items-center border-b pb-2">
+                      <span className="font-bold text-base">【問題 {idx + 1}】 {p.title || '無題'}</span>
+                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-300">
+                        {p.university || '大学入試'} / {p.difficulty || '標準'}
+                      </span>
+                    </div>
+
+                    <div className="text-xs font-serif bg-gray-50 p-3 rounded border border-gray-200 leading-relaxed whitespace-pre-wrap">
+                      {p.question}
+                    </div>
+
+                    <div className="text-xs space-y-1">
+                      <div className="font-bold text-gray-800">■ 目指すべきゴール（最終目的・解法方針）:</div>
+                      <div className="pl-3 text-gray-700">{p.goal}</div>
+                    </div>
+
+                    {p.steps && p.steps.length > 0 && (
+                      <div className="text-xs space-y-1.5 pt-1">
+                        <div className="font-bold text-gray-800">■ 4ステップ思考プロセスとつまずき箇所:</div>
+                        {p.steps.map((st) => {
+                          const isStuck = userLogs[p.id]?.[st.step] === 'stuck';
+                          return (
+                            <div 
+                              key={st.step} 
+                              className={`p-2 rounded text-xs border ${
+                                isStuck 
+                                  ? 'bg-red-50 border-red-300 font-bold text-red-900' 
+                                  : 'bg-gray-50 border-gray-200 text-gray-800'
+                              }`}
+                            >
+                              <span className="font-bold">Step {st.step} [{st.title}]: </span>
+                              <span>{st.action}</span>
+                              {isStuck && <span className="text-red-600 font-black ml-2">★ 要復習（つまずき）</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {p.formulas && p.formulas.length > 0 && (
+                      <div className="text-xs pt-1 border-t border-gray-200">
+                        <span className="font-bold text-gray-800">■ 連動公式: </span>
+                        <span className="text-gray-700">{p.formulas.map(f => f.name).join('、')}</span>
+                      </div>
+                    )}
+                  </div>
+                ))
+            )}
+          </div>
+        </div>
       </main>
+
+      {/* 印刷用スタイル */}
+      <style>{`
+        @media print {
+          body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+          }
+          header, nav, button, input, select, .no-print {
+            display: none !important;
+          }
+          .print\\:block {
+            display: block !important;
+          }
+          .print-only-notebook {
+            display: block !important;
+          }
+          @page {
+            margin: 15mm;
+          }
+        }
+      `}</style>
     </div>
   );
 }
