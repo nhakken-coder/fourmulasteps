@@ -840,6 +840,10 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5 font-semibold text-white">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>標準 4ステップ思考法解説</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-semibold text-white">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
                     <span>超詳細・行間完全解説モード（途中式全展開）</span>
                   </li>
                   <li className="flex items-center gap-2.5">
@@ -852,11 +856,23 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>マイ弱点克服ノートのPDF一括出力・印刷</span>
+                    <span>つまずきステップの割合グラフ表示</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>直近30件の解析履歴保存</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
                     <span>解析履歴の無制限保存 ＆ 弱点フォルダ分け</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>マイ弱点克服ノートのPDF一括出力・印刷</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
+                    <span>公式集（全213公式）完全連動</span>
                   </li>
                 </ul>
               </div>
