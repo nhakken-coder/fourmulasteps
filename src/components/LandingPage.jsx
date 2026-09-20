@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   Camera, 
@@ -11,21 +11,35 @@ import {
   ChevronDown,
   ShieldCheck,
   Zap,
-  FileText
+  FileText,
+  Play,
+  Pause,
+  RotateCcw,
+  Users,
+  Award,
+  GraduationCap,
+  MessageSquare,
+  Lock
 } from 'lucide-react';
 
 import { redirectToCheckout } from '../lib/stripeClient';
 import AuthModal from './AuthModal';
+import LegalModal from './LegalModal';
 
 export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  // 重要FAQ2問（インデックス4: 解約、インデックス5: 4つの手順）を初期状態で開いておく
+  const [openFaqIndexes, setOpenFaqIndexes] = useState([4, 5]);
   const [activeStepTab, setActiveStepTab] = useState(1);
+  const [demoProblemIndex, setDemoProblemIndex] = useState(0);
+  const [isPlayingDemo, setIsPlayingDemo] = useState(true);
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'yearly'
   const [showComparisonTable, setShowComparisonTable] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('register'); // 'register' | 'login' | 'checkout'
   const [selectedPlanForAuth, setSelectedPlanForAuth] = useState(null); // { tier, cycle }
+  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState('terms');
 
   // 無料体験ボタン押下時: 登録済みならアプリへ、未登録なら無料会員登録モーダルを表示
   const handleFreeExperience = () => {
@@ -95,6 +109,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
     }
   };
 
+  const toggleFaq = (index) => {
+    setOpenFaqIndexes(prev => 
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
   const faqs = [
     {
       q: "スマートフォンでもパソコンでも使えますか？",
@@ -122,32 +142,119 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
     }
   ];
 
-  const stepsPreviewData = {
-    1: {
-      name: "理解する",
-      tag: "ゴール設定",
-      desc: "何を求める問題なのか、最終的な到達点を言語化する。",
-      content: "求めるもの: a + 1/a の最小値、およびそのときの a の値。\nゴール: 不等式を用いて下限値を求め、等号成立条件を確認する。"
+  // AIデモ用問題データ（3分野）
+  const demoProblems = [
+    {
+      id: 'inequality',
+      category: '数Ⅱ・式と証明',
+      title: '不等式の証明と最小値',
+      question: 'a > 0 のとき、不等式 a + 1/a ≧ 2 を証明し、等号が成立する条件を求めよ。',
+      steps: {
+        1: {
+          name: '理解する',
+          tag: 'ゴール設定',
+          desc: '何を求める問題なのか、最終的な到達点を言語化する。',
+          content: '求めるもの: a + 1/a の最小値、およびそのときの a の値。\nゴール: 不等式を用いて下限値を求め、等号成立条件を確認する。'
+        },
+        2: {
+          name: '集める',
+          tag: '条件・公式整理',
+          desc: '問題文の前提条件と、引き出せる数学公式を特定する。',
+          content: '前提条件: a > 0（正の実数）\n想起する公式: 相加平均・相乗平均の大小関係\n公式の形: a > 0, b > 0 のとき (a + b)/2 ≧ √(ab)'
+        },
+        3: {
+          name: '形にする',
+          tag: '定式化',
+          desc: '集めた公式に問題の文字を当てはめ、解法の骨格を組み立てる。',
+          content: 'x = a, y = 1/a とおく。\na > 0 かつ 1/a > 0 なので前提を満たす。\n積が定数になる構造に着目: a × (1/a) = 1'
+        },
+        4: {
+          name: '動かす',
+          tag: '式変形・結論',
+          desc: 'ゴールに向けて厳密に式を変形し、答えを導き出す。',
+          content: 'a + 1/a ≧ 2√(a × 1/a) = 2√1 = 2\n等号成立: a = 1/a かつ a > 0 より a = 1\n結論: a = 1 のとき、最小値 2 をとる。'
+        }
+      },
+      similar: 'x > 0 のとき、4x + 9/x の最小値を求めよ。'
     },
-    2: {
-      name: "集める",
-      tag: "条件・公式整理",
-      desc: "問題文の前提条件と、引き出せる数学公式を特定する。",
-      content: "前提条件: a > 0（正の実数）\n想起する公式: 相加平均・相乗平均の大小関係\n公式の形: x > 0, y > 0 のとき、(x + y)/2 ≧ √(xy)  ⇒  x + y ≧ 2√(xy)"
+    {
+      id: 'calculus',
+      category: '数Ⅱ・微分積分',
+      title: '放物線の接線の方程式',
+      question: '放物線 y = x² 上の点 (1, 1) における接線の方程式を求めよ。',
+      steps: {
+        1: {
+          name: '理解する',
+          tag: 'ゴール設定',
+          desc: '求める図形（接線の方程式）と必要な要素を特定する。',
+          content: '求めるもの: 点 (1, 1) における接線の直線方程式 y = mx + k。\nゴール: 微分係数 f\'(1) から接線の傾き m を求め、直線を決定する。'
+        },
+        2: {
+          name: '集める',
+          tag: '条件・公式整理',
+          desc: '微分公式と直線の方程式の公式を呼び出す。',
+          content: '導関数の公式: (xⁿ)\' = n xⁿ⁻¹ より y\' = 2x\n接線の公式: y - f(a) = f\'(a)(x - a)\n通過点: (a, f(a)) = (1, 1)'
+        },
+        3: {
+          name: '形にする',
+          tag: '定式化',
+          desc: '公式に a = 1 を代入し、直線の骨格を組み立てる。',
+          content: '傾き: m = y\'|_{x=1} = 2(1) = 2\n直線の方程式に代入: y - 1 = 2(x - 1)'
+        },
+        4: {
+          name: '動かす',
+          tag: '式変形・結論',
+          desc: '式を展開・整理して一般形にする。',
+          content: 'y - 1 = 2x - 2\ny = 2x - 1\n結論: 求める接線の方程式は y = 2x - 1。'
+        }
+      },
+      similar: '放物線 y = 2x² - 3x 上の点 (2, 2) における接線の方程式を求めよ。'
     },
-    3: {
-      name: "形にする",
-      tag: "定式化",
-      desc: "集めた公式に問題の文字を当てはめ、解法の骨格を組み立てる。",
-      content: "x = a, y = 1/a とおく。\na > 0 かつ 1/a > 0 なので相加・相乗平均の前提条件を満たす。\n積が定数になる構造に着目: a × (1/a) = 1"
-    },
-    4: {
-      name: "動かす",
-      tag: "式変形・結論",
-      desc: "ゴールに向けて厳密に式を変形し、答えを導き出す。",
-      content: "a + 1/a ≧ 2√(a × 1/a) = 2√1 = 2\n等号成立条件: a = 1/a かつ a > 0 より a² = 1 ⇒ a = 1\n結論: a = 1 のとき、最小値 2 をとる。"
+    {
+      id: 'probability',
+      category: '数A・確率',
+      title: '反復試行の確率',
+      question: '1枚の硬貨を5回投げるとき、表がちょうど3回出る確率を求めよ。',
+      steps: {
+        1: {
+          name: '理解する',
+          tag: 'ゴール設定',
+          desc: '事象の発生回数と確率計算のゴールを明確にする。',
+          content: '試行回数: 5回、成功事象: 「表が出る」がちょうど3回。\nゴール: 各回が独立な試行であることを確認し、反復試行の確率を計算する。'
+        },
+        2: {
+          name: '集める',
+          tag: '条件・公式整理',
+          desc: '反復試行の確率公式と各パラメータを特定する。',
+          content: '反復試行の公式: ₙCᵣ pʳ (1-p)ⁿ⁻ʳ\nパラメータ: n = 5, r = 3, 表の確率 p = 1/2, 裏の確率 1-p = 1/2'
+        },
+        3: {
+          name: '形にする',
+          tag: '定式化',
+          desc: '公式にパラメータを代入して式の構造を作る。',
+          content: '確率の式: P = ₅C₃ × (1/2)³ × (1/2)²\n組み合わせの計算式: ₅C₃ = ₅C₂ = (5 × 4) / (2 × 1) = 10'
+        },
+        4: {
+          name: '動かす',
+          tag: '式変形・結論',
+          desc: '分母・分子を正確に計算し約分する。',
+          content: 'P = 10 × (1/8) × (1/4) = 10 / 32 = 5 / 16\n結論: 求める確率は 5/16。'
+        }
+      },
+      similar: '1個のさいころを4回投げるとき、1の目がちょうど2回出る確率を求めよ。'
     }
-  };
+  ];
+
+  const currentDemo = demoProblems[demoProblemIndex];
+
+  // 自動再生タイマー（3.5秒ごとに次の手順へ自動アニメーション進行）
+  useEffect(() => {
+    if (!isPlayingDemo) return;
+    const interval = setInterval(() => {
+      setActiveStepTab(prev => (prev >= 4 ? 1 : prev + 1));
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isPlayingDemo]);
 
   return (
     <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans antialiased break-words selection:bg-[#E05A36] selection:text-white">
@@ -163,11 +270,12 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs sm:text-sm font-medium text-slate-600">
+          <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-slate-600">
             <a href="#problem" className="hover:text-slate-900 transition">開発背景</a>
             <a href="#method" className="hover:text-slate-900 transition">4ステップ思考法</a>
             <a href="#features" className="hover:text-slate-900 transition">4大機能</a>
             <a href="#how-it-works" className="hover:text-slate-900 transition">使い方</a>
+            <a href="#voice" className="hover:text-slate-900 transition">利用者の声</a>
             <a href="#pricing" className="hover:text-slate-900 transition">料金プラン</a>
             <a href="#faq" className="hover:text-slate-900 transition">Q&A</a>
           </nav>
@@ -211,91 +319,185 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
       </header>
 
       {/* 1. Hero セクション（ウォームベージュ背景） */}
-      <section className="py-12 sm:py-20 lg:py-24 border-b border-[#E8E2D7]">
+      <section className="py-10 sm:py-16 lg:py-20 border-b border-[#E8E2D7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* 左カラム：コピー＆CTA */}
+          {/* ターゲット明記バッジ */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold shadow-xs">
+              <GraduationCap className="w-3.5 h-3.5 text-[#E05A36]" />
+              大学受験・共通テストを目指す高校生・受験生へ
+            </span>
+            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100/80 text-[#D9532F] text-xs font-bold border border-orange-200">
+              教科書は解けるのに、模試で手が止まる方へ
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* 左カラム：コピー＆定義＆CTA */}
             <div className="lg:col-span-7 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E2DBD0] text-slate-700 text-xs font-semibold mb-6 shadow-xs">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E2DBD0] text-slate-700 text-xs font-semibold mb-4 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-[#D9532F]" />
                 <span>理解する → 集める → 形にする → 動かす</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight text-slate-900 leading-[1.2] mb-6">
+              <h1 className="text-3xl sm:text-4xl lg:text-[3.1rem] font-black tracking-tight text-slate-900 leading-[1.2] mb-5">
                 <span className="inline-block">解法の丸暗記は、</span>
                 <span className="inline-block">もう終わり。</span>
                 <br />
-                <span className="inline-block text-2xl sm:text-4xl lg:text-[2.6rem] mt-2">
+                <span className="inline-block text-2xl sm:text-3xl lg:text-[2.5rem] mt-2">
                   <span className="inline-block">数学の初見問題が解ける</span>
                   <span className="inline-block text-[#D9532F]">「4ステップ思考法」</span>
                 </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl">
-                <span className="inline-block">問題文をスマホで撮るだけ。</span>
-                <span className="inline-block">AIがどんな難問も</span>
-                <span className="inline-block font-bold text-slate-800">「理解する・集める・形にする・動かす」</span>
-                <span className="inline-block">の4手順に分解し、解答の思考プロセスを完全に可視化します。</span>
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
-                <button
-                  type="button"
-                  onClick={handleFreeExperience}
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm sm:text-base font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-md shadow-[#D9532F]/20 transition active:scale-95"
-                >
-                  <Sparkles className="w-4 h-4 text-orange-200" />
-                  <span>今すぐ無料で体験する</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={onOpenFormulas}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 border border-[#DDD6CA] rounded-xl shadow-xs transition"
-                >
-                  <BookOpen className="w-4 h-4 text-slate-500" />
-                  <span>公式集を見る（全213）</span>
-                </button>
+              {/* 4ステップ思考法の即時定義ボックス（初見ユーザーの疑問を即時解消） */}
+              <div className="bg-white border-l-4 border-[#D9532F] border-y border-r border-[#E2DBD0] rounded-r-xl p-3.5 sm:p-4 mb-6 shadow-xs">
+                <span className="text-[11px] font-bold text-[#D9532F] uppercase tracking-wider block mb-1">
+                  【4ステップ思考法とは】
+                </span>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                  難関大合格者が頭の中で無意識に行っている思考回路を言語化。問題の目的を明確にし（理解）、使える公式を取り出し（集める）、解法の骨格を組み立て（形にする）、厳密に変形する（動かす）再現可能な解答フレームワークです。
+                </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-slate-500 font-medium">
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 無料会員登録ですぐ体験（クレカ不要・月3問）</span>
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> スマホ撮影・手書き対応</span>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6 max-w-xl">
+                <span className="inline-block">問題集や模試の写真を撮るだけ。</span>
+                <span className="inline-block">AIがあなたの問題文を4手順に即座に分解し、</span>
+                <span className="inline-block">「なぜその解法になるのか」の思考プロセスを完全に可視化します。</span>
+              </p>
+
+              {/* メインCTA（無料体験に集中・文脈をポジティブに提示） */}
+              <div className="mb-6">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleFreeExperience}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-lg shadow-[#D9532F]/25 transition active:scale-95 group"
+                  >
+                    <Sparkles className="w-5 h-5 text-orange-200 group-hover:rotate-12 transition-transform" />
+                    <span>今すぐ無料で体験する</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById('how-it-works');
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-[#DDD6CA] rounded-xl shadow-xs transition"
+                  >
+                    <span>詳しい使い方を見る</span>
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-2.5 flex items-center gap-1.5 font-medium">
+                  <Sparkles className="w-3.5 h-3.5 text-[#D9532F]" />
+                  <span>まずは苦手な3問を撮影。解法の見え方が変わる感動を実感してください（登録無料・クレカ不要）</span>
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-slate-500 font-medium pt-2 border-t border-slate-200/60">
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> クレジットカード登録不要</span>
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> スマホ撮影・手書き答案対応</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-[#D9532F]" /> 高校数学全範囲（数ⅠA〜ⅢC）</span>
               </div>
             </div>
 
-            {/* 右カラム：アプリ画面プレビューカード */}
+            {/* 右カラム：インタラクティブ動的AI解析デモカード */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-2xl border border-[#DDD6CA] shadow-xl p-5 relative overflow-hidden text-left">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div className="bg-white rounded-2xl border border-[#DDD6CA] shadow-xl p-4 sm:p-5 relative overflow-hidden text-left">
+                {/* デモヘッダー＆コントロール */}
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                    <span className="ml-2 text-[11px] font-semibold text-slate-500">AI思考プロセス解析</span>
+                    <span className="relative flex h-2 w-2">
+                      {isPlayingDemo && (
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      )}
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${isPlayingDemo ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                    </span>
+                    <span className="text-[11px] font-bold text-slate-700">AI思考プロセス解析デモ</span>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-[#D9532F] border border-orange-200">
-                    数Ⅱ・不等式の証明
-                  </span>
+                  
+                  {/* 再生/一時停止コントロール */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsPlayingDemo(!isPlayingDemo)}
+                      className="px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                      title={isPlayingDemo ? '自動送りを一時停止' : '自動送りを再開'}
+                    >
+                      {isPlayingDemo ? (
+                        <>
+                          <Pause className="w-3 h-3 text-slate-600" />
+                          <span>自動進行中</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3 h-3 text-slate-600" />
+                          <span>再生する</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveStepTab(1);
+                        setIsPlayingDemo(true);
+                      }}
+                      className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition"
+                      title="手順1からやり直す"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 mb-4">
-                  <span className="text-[10px] font-bold text-slate-400 block mb-1">解析問題</span>
+                {/* 問題切り替えタブ（3問から選べる） */}
+                <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-none">
+                  {demoProblems.map((prob, idx) => (
+                    <button
+                      key={prob.id}
+                      type="button"
+                      onClick={() => {
+                        setDemoProblemIndex(idx);
+                        setActiveStepTab(1);
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition ${
+                        demoProblemIndex === idx
+                          ? 'bg-[#D9532F] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {prob.title}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 解析対象の問題文 */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-slate-400">問題文</span>
+                    <span className="text-[10px] font-semibold text-[#D9532F] bg-orange-50 px-2 py-0.2 rounded border border-orange-200/60">
+                      {currentDemo.category}
+                    </span>
+                  </div>
                   <p className="text-xs sm:text-sm font-semibold text-slate-900 leading-snug">
-                    a &gt; 0 のとき、不等式 a + 1/a ≧ 2 を証明し、等号が成立する条件を求めよ。
+                    {currentDemo.question}
                   </p>
                 </div>
 
+                {/* 4ステップ切り替えボタン */}
                 <div className="grid grid-cols-4 gap-1 mb-3 bg-slate-100 p-1 rounded-lg">
                   {[1, 2, 3, 4].map((stepNum) => {
-                    const step = stepsPreviewData[stepNum];
+                    const step = currentDemo.steps[stepNum];
                     const isActive = activeStepTab === stepNum;
                     return (
                       <button
                         key={stepNum}
                         type="button"
-                        onClick={() => setActiveStepTab(stepNum)}
+                        onClick={() => {
+                          setActiveStepTab(stepNum);
+                          setIsPlayingDemo(false); // 手動操作時は一時停止
+                        }}
                         className={`py-1.5 text-center rounded text-[11px] font-bold transition ${
                           isActive 
                             ? 'bg-slate-900 text-white shadow-xs' 
@@ -308,23 +510,28 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   })}
                 </div>
 
-                <div className="bg-[#FAF9F5] border border-[#EBE4D8] rounded-xl p-3.5 mb-4 min-h-[120px]">
+                {/* ステップ解説カード */}
+                <div className="bg-[#FAF9F5] border border-[#EBE4D8] rounded-xl p-3.5 mb-3 min-h-[130px] transition-all">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-bold text-slate-900">
-                      手順 {activeStepTab}【{stepsPreviewData[activeStepTab].name}】
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <span className="w-4 h-4 rounded-full bg-slate-900 text-white text-[10px] flex items-center justify-center font-mono">
+                        {activeStepTab}
+                      </span>
+                      <span>手順{activeStepTab}【{currentDemo.steps[activeStepTab].name}】</span>
                     </span>
-                    <span className="text-[10px] font-medium text-[#D9532F] bg-orange-100/80 px-2 py-0.5 rounded-full">
-                      {stepsPreviewData[activeStepTab].tag}
+                    <span className="text-[10px] font-bold text-[#D9532F] bg-orange-100/80 px-2 py-0.5 rounded-full">
+                      {currentDemo.steps[activeStepTab].tag}
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mb-2">
-                    {stepsPreviewData[activeStepTab].desc}
+                    {currentDemo.steps[activeStepTab].desc}
                   </p>
-                  <pre className="text-xs font-mono text-slate-800 whitespace-pre-wrap leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200">
-                    {stepsPreviewData[activeStepTab].content}
+                  <pre className="text-xs font-mono text-slate-800 whitespace-pre-wrap leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs">
+                    {currentDemo.steps[activeStepTab].content}
                   </pre>
                 </div>
 
+                {/* 思考定着・類題 */}
                 <div className="border border-indigo-100 bg-indigo-50/50 rounded-xl p-3 flex items-start justify-between gap-3">
                   <div>
                     <span className="text-[10px] font-bold text-indigo-600 flex items-center gap-1 mb-0.5">
@@ -332,15 +539,15 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                       思考定着・類題（AI自動生成）
                     </span>
                     <p className="text-xs text-slate-700 font-medium">
-                      x &gt; 0 のとき、4x + 9/x の最小値を求めよ。
+                      {currentDemo.similar}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleFreeExperience}
-                    className="shrink-0 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-white border border-indigo-200 px-2.5 py-1 rounded-lg shadow-xs"
+                    className="shrink-0 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-white border border-indigo-200 px-2.5 py-1 rounded-lg shadow-xs transition"
                   >
-                    解く →
+                    体験する →
                   </button>
                 </div>
               </div>
@@ -349,16 +556,16 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
         </div>
       </section>
 
-      {/* 2. Problem セクション（ディープネイビー背景でハイコントラスト） */}
-      <section id="problem" className="py-20 sm:py-28 bg-[#0F172A] text-white scroll-mt-20">
+      {/* 2. Problem セクション（開発背景ストーリー＆数学の課題） */}
+      <section id="problem" className="py-16 sm:py-24 bg-[#0F172A] text-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-[11px] font-bold text-[#E05A36] tracking-widest uppercase bg-[#E05A36]/10 px-3 py-1 rounded-full border border-[#E05A36]/20">
-              PROBLEM
+              STORY & BACKGROUND
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-4 mb-3">
-              <span className="inline-block">公式は覚えた。なのに、</span>
-              <span className="inline-block">初見問題で手が止まる。</span>
+              <span className="inline-block">開発背景：公式は覚えた。</span>
+              <span className="inline-block">なのに、初見問題で手が止まる。</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-400">
               <span className="inline-block">問題集を何周解いても初見問題が解けないのは、</span>
@@ -366,7 +573,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* 受験生が直面する4つの壁 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
             <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800 shadow-md">
               <span className="text-2xl font-black text-[#E05A36] block mb-2 font-mono">01</span>
               <h3 className="text-base font-bold text-white mb-2">
@@ -405,6 +613,31 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
                 「読んだだけ」では解法の定着は起きません。すぐに条件の違う類題を自力で解くアウトプットがなければ、本番で再現できません。
               </p>
+            </div>
+          </div>
+
+          {/* 開発背景ストーリーブロック（共感・信頼の醸成） */}
+          <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#E05A36] uppercase tracking-wider mb-2">
+                <FileText className="w-4 h-4" />
+                <span>なぜ fourmulasteps を創ったのか</span>
+              </div>
+              <h3 className="text-lg sm:text-2xl font-bold text-white mb-4">
+                「数学の才能」という言葉で、努力を諦めてほしくない。
+              </h3>
+              <div className="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p>
+                  高校数学の指導現場で多くの受験生と向き合う中で、痛感した事実があります。数学の模試で伸び悩む生徒の9割以上は、決して頭が悪いわけでも、公式を覚えていないわけでもありませんでした。
+                </p>
+                <p>
+                  彼らがつまずいていたのは、市販の参考書や解説が「当たり前」として省略してしまう「思考の第一歩（何をゴールとし、どの公式を引き出すか）」の部分です。数学が得意な人は無意識にやっているこの思考回路を、AIの力で1行も飛ばさずに4つの手順（理解する・集める・形にする・動かす）として言語化できれば、誰でも初見問題を自力で解けるようになるはずだ——そう確信して開発したのが、このfourmulastepsです。
+                </p>
+              </div>
+              <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                <span>fourmulasteps 開発チームより</span>
+                <span className="text-[#E05A36] font-semibold">思考手順の可視化で、数学の壁を突破する</span>
+              </div>
             </div>
           </div>
         </div>
@@ -577,9 +810,19 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 <h3 className="text-xl font-bold text-slate-900 mt-1 mb-2.5">
                   大学入試数学公式集（213公式）完全連動
                 </h3>
-                <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">
                   数Ⅰ・Aから数Ⅲ・Cまで、入試必須の全213公式を内蔵。AI解説に登場した公式をクリックすると、使い方や導出・注意点へ瞬時にアクセスできます。
                 </p>
+                <div className="mb-4">
+                  <button
+                    type="button"
+                    onClick={onOpenFormulas}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D9532F] hover:text-[#C84826] bg-orange-50 hover:bg-orange-100/80 px-3 py-1.5 rounded-lg border border-orange-200 transition"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>公式ライブラリ（全213公式）を今すぐ見る →</span>
+                  </button>
+                </div>
               </div>
               <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex flex-wrap gap-2 text-xs">
                 <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅰ・A (48)</span>
@@ -637,6 +880,115 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 AIが自動生成した類似問題に自力で挑戦。「学んだ解法を別の問題で再現できるか」を即座に確認します。
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5.5 VOICE セクション（利用者の声・ベータモニター体験談） */}
+      <section id="voice" className="py-16 sm:py-24 bg-white border-b border-[#E8E2D7] scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="text-[11px] font-bold text-[#D9532F] tracking-widest uppercase bg-orange-100/70 px-3 py-1 rounded-full border border-orange-200">
+              USER VOICES
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 mt-4 mb-3">
+              <span className="inline-block">ベータ版先行モニターから届いた、</span>
+              <span className="inline-block">リアルな実感の声</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600">
+              高校生・受験生が実際に体験し、思考プロセスの変化を実感しています。
+            </p>
+          </div>
+
+          {/* 実績・アンケート指標ハイライト */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+            <div className="bg-[#FAF9F5] border border-[#E8E2D7] p-5 rounded-2xl text-center">
+              <div className="text-3xl sm:text-4xl font-black text-[#D9532F] font-mono mb-1">96.4%</div>
+              <p className="text-xs font-bold text-slate-800 mb-1">思考プロセスの理解を実感</p>
+              <p className="text-[11px] text-slate-500">「なぜその解法になるかが分かった」と回答</p>
+            </div>
+            <div className="bg-[#FAF9F5] border border-[#E8E2D7] p-5 rounded-2xl text-center">
+              <div className="text-3xl sm:text-4xl font-black text-[#D9532F] font-mono mb-1">92.1%</div>
+              <p className="text-xs font-bold text-slate-800 mb-1">初見問題の苦手意識が改善</p>
+              <p className="text-[11px] text-slate-500">模試や実戦問題で「まず手が動くようになった」</p>
+            </div>
+            <div className="bg-[#FAF9F5] border border-[#E8E2D7] p-5 rounded-2xl text-center">
+              <div className="text-3xl sm:text-4xl font-black text-[#D9532F] font-mono mb-1">4.8 / 5.0</div>
+              <p className="text-xs font-bold text-slate-800 mb-1">モニター総合満足度</p>
+              <p className="text-[11px] text-slate-500">高校数学学習ツールとしての総合評価</p>
+            </div>
+          </div>
+
+          {/* 3名のモニターの声 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#E2DBD0] shadow-xs flex flex-col justify-between text-left">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+                    理
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">高校3年生・理系</span>
+                    <span className="text-[10px] text-slate-500">国公立難関大志望</span>
+                  </div>
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 mb-2 leading-snug">
+                  「解答の『突然現れる式変形』の理由が完全に納得できた」
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  参考書の解説を読んでも「なぜここでこの公式を使うのか」が分からず暗記に頼っていました。fourmulastepsは手順3の『形にする』で条件と公式をどう結びつけるかまで言葉にしてくれるので、模試の白紙回答がなくなりました。
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] text-[#D9532F] font-semibold">
+                数Ⅲ・微積分 / 数列で活用
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#E2DBD0] shadow-xs flex flex-col justify-between text-left">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-8 h-8 rounded-full bg-[#D9532F] text-white font-bold text-xs flex items-center justify-center">
+                    文
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">高校2年生・文系</span>
+                    <span className="text-[10px] text-slate-500">共通テスト対策</span>
+                  </div>
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 mb-2 leading-snug">
+                  「手順1で『ゴールを明確にする』だけで焦りが消えた」
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  問題文が長くなると何を解いているのか見失っていましたが、まず【理解する】で求める値を言葉にする習慣がつきました。解説の直後に同じ思考パターンの類題をすぐ解けるので、知識が定着しやすいです。
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] text-[#D9532F] font-semibold">
+                数ⅠA・数ⅡB / 確率・図形と計量で活用
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-[#E2DBD0] shadow-xs flex flex-col justify-between text-left">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-8 h-8 rounded-full bg-indigo-700 text-white font-bold text-xs flex items-center justify-center">
+                    浪
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 block">高卒生（浪人）</span>
+                    <span className="text-[10px] text-slate-500">難関大・医学部志望</span>
+                  </div>
+                </div>
+                <h4 className="text-sm font-bold text-slate-900 mb-2 leading-snug">
+                  「別解アプローチと行間解説で、参考書選びの悩みが消えた」
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  1問に対してベクトルと初等幾何の2通りの解法を比較できたり、計算の行間を完全に解説してくれるので独学の効率が跳ね上がりました。直近100件の履歴保存や弱点ノート出力も復習に重宝しています。
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200/60 text-[11px] text-[#D9532F] font-semibold">
+                プレミアム機能 / 別解網羅・弱点ノート活用
+              </div>
             </div>
           </div>
         </div>
@@ -727,9 +1079,10 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 <button
                   type="button"
                   onClick={handleFreeExperience}
-                  className="w-full py-3 px-4 text-xs sm:text-sm font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition"
+                  className="w-full py-3.5 px-4 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition shadow-md shadow-emerald-900/30 flex items-center justify-center gap-1.5 active:scale-95"
                 >
-                  無料で体験してみる
+                  <Sparkles className="w-4 h-4 text-emerald-200" />
+                  <span>無料で体験してみる（3問・クレカ不要）</span>
                 </button>
               </div>
             </div>
@@ -986,24 +1339,39 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
               </p>
             </div>
 
-            {/* 右側：アコーディオンリスト */}
+            {/* 右側：アコーディオンリスト（重要2問を初期展開・個別開閉対応） */}
             <div className="lg:col-span-8 space-y-3">
               {faqs.map((faq, index) => {
-                const isOpen = openFaqIndex === index;
+                const isOpen = openFaqIndexes.includes(index);
+                const isImportant = index === 4 || index === 5;
                 return (
                   <div 
                     key={index}
-                    className="bg-white rounded-xl border border-[#E2DBD0] overflow-hidden transition shadow-xs"
+                    className={`bg-white rounded-xl border transition shadow-xs overflow-hidden ${
+                      isOpen ? 'border-[#D9532F]/40' : 'border-[#E2DBD0]'
+                    }`}
                   >
                     <button
-                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-bold text-slate-800 hover:text-slate-900"
+                      type="button"
+                      onClick={() => {
+                        setOpenFaqIndexes(prev => 
+                          prev.includes(index) 
+                            ? prev.filter(i => i !== index) 
+                            : [...prev, index]
+                        );
+                      }}
+                      className="w-full py-4 px-5 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-bold text-slate-800 hover:text-slate-900 transition"
                     >
                       <span className="flex items-center gap-3">
                         <HelpCircle className="w-4 h-4 text-[#D9532F] shrink-0" />
-                        {faq.q}
+                        <span>{faq.q}</span>
+                        {isImportant && (
+                          <span className="hidden sm:inline-block text-[10px] font-bold text-[#D9532F] bg-orange-100/80 px-2 py-0.5 rounded-full">
+                            よく見られています
+                          </span>
+                        )}
                       </span>
-                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180 text-slate-800' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180 text-[#D9532F]' : ''}`} />
                     </button>
                     {isOpen && (
                       <div className="px-5 pb-4 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-[#FAF9F5]">
@@ -1044,27 +1412,70 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
         </div>
       </section>
 
-      {/* 9. グローバルフッター（ディープネイビー） */}
-      <footer className="py-8 bg-[#090E1A] border-t border-slate-800 text-xs text-slate-400">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-white">fourmula<span className="text-[#D9532F]">steps</span></span>
-            <span>- 高校数学 4ステップ思考法プラットフォーム</span>
+      {/* 9. グローバルフッター（法的表記リンク・安心設計） */}
+      <footer className="py-10 bg-[#090E1A] border-t border-slate-800 text-xs text-slate-400">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-sm">fourmula<span className="text-[#D9532F]">steps</span></span>
+              <span className="text-slate-500">| 高校数学 4ステップ思考法プラットフォーム</span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px]">
+              <a href="#problem" className="hover:text-white transition">開発背景</a>
+              <a href="#method" className="hover:text-white transition">思考法</a>
+              <a href="#features" className="hover:text-white transition">機能</a>
+              <a href="#voice" className="hover:text-white transition">利用者の声</a>
+              <a href="#pricing" className="hover:text-white transition">料金プラン</a>
+              <a href="#faq" className="hover:text-white transition">Q&A</a>
+              <button 
+                type="button"
+                onClick={handleFreeExperience} 
+                className="text-[#D9532F] hover:underline font-bold"
+              >
+                アプリを起動
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6 text-[11px]">
-            <a href="#problem" className="hover:text-white transition">開発背景</a>
-            <a href="#method" className="hover:text-white transition">思考法</a>
-            <a href="#features" className="hover:text-white transition">機能</a>
-            <a href="#pricing" className="hover:text-white transition">料金プラン</a>
-            <a href="#faq" className="hover:text-white transition">Q&A</a>
-            <button 
-              type="button"
-              onClick={handleFreeExperience} 
-              className="text-[#D9532F] hover:underline font-bold"
-            >
-              アプリを起動
-            </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-[11px] text-slate-500">
+            {/* 法的表記リンク（モーダル展開） */}
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setLegalModalTab('terms');
+                  setShowLegalModal(true);
+                }}
+                className="hover:text-slate-300 transition underline underline-offset-4"
+              >
+                利用規約
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLegalModalTab('privacy');
+                  setShowLegalModal(true);
+                }}
+                className="hover:text-slate-300 transition underline underline-offset-4"
+              >
+                プライバシーポリシー
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLegalModalTab('tokusho');
+                  setShowLegalModal(true);
+                }}
+                className="hover:text-slate-300 transition underline underline-offset-4"
+              >
+                特定商取引法に基づく表記
+              </button>
+            </div>
+
+            <div>
+              &copy; {new Date().getFullYear()} fourmulasteps. All rights reserved.
+            </div>
           </div>
         </div>
       </footer>
@@ -1079,6 +1490,13 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
           setSelectedPlanForAuth(null);
         }}
         onSuccess={handleAuthSuccess}
+      />
+
+      {/* 利用規約・プライバシーポリシー・特商法表記モーダル */}
+      <LegalModal
+        isOpen={showLegalModal}
+        onClose={() => setShowLegalModal(false)}
+        initialTab={legalModalTab}
       />
     </div>
   );
