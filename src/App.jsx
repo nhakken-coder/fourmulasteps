@@ -30,7 +30,6 @@ import {
   ChevronUp, 
   BookOpen, 
   Lightbulb, 
-  Code2, 
   Sparkles,
   Camera,
   Image as ImageIcon,
@@ -299,7 +298,6 @@ function FourmulaStepsAppInner() {
   const [problems, setProblems] = useState(initialProblems);
   const [selectedProblemId, setSelectedProblemId] = useState(1);
   const [openStep, setOpenStep] = useState(1);
-  const [showGoal, setShowGoal] = useState(false);
   const [showAlt, setShowAlt] = useState(false);
   const [openSimilarProblems, setOpenSimilarProblems] = useState([0, 1]);
   const [inputMode, setInputMode] = useState('image');
@@ -1289,49 +1287,11 @@ function FourmulaStepsAppInner() {
                 </div>
               </div>
 
-              {/* 目標（ゴール）ナビゲーター：初期状態は折りたたんで隠し、自力で考えた後に開示 */}
-              <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/60 rounded-xl p-4 shadow-xl">
-                <button
-                  type="button"
-                  onClick={() => setShowGoal(!showGoal)}
-                  className="w-full flex items-center justify-between text-left cursor-pointer gap-2"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg border border-amber-500/40 shrink-0">
-                      <Target className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-indigo-300">
-                          Step 1 で定義した目指すべきゴール（最終目的・解法方針）
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/60 font-semibold hidden sm:inline">
-                          思考ガイド
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 mt-0.5">
-                        まずは自力で問題文を考えた後、クリックして思考方針を開示してください
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-900/60 hover:bg-indigo-800/80 text-indigo-200 border border-indigo-600/70 shrink-0 transition">
-                    {showGoal ? '方針を隠す ▲' : '方針を見る ▼'}
-                  </span>
-                </button>
-
-                {showGoal && (
-                  <div className="mt-3 pt-3 border-t border-slate-800 text-sm font-bold text-amber-300 pl-2 font-sans animate-in fade-in duration-200">
-                    <MathText text={currentProblem.goal || "最終目的を明示"} />
-                  </div>
-                )}
-              </div>
-
               {/* 4ステップアコーディオン */}
               <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl">
                 <div className="flex flex-col gap-2 mb-4 border-b border-slate-700 pb-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-md font-bold text-indigo-400 flex items-center gap-2">
-                      <Code2 className="w-5 h-5" />
+                    <h3 className="text-md font-bold text-indigo-400">
                       fourmulasteps 思考プロセス
                     </h3>
                     <span className="text-xs text-slate-300 font-medium">各ステップの自力再現度を記録</span>
