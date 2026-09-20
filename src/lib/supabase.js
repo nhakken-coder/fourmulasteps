@@ -48,13 +48,18 @@ export async function getCurrentUser() {
 export async function signUpWithEmail(email, password, displayName = '受験生') {
   if (!supabase) throw new Error('Supabaseが設定されていません');
 
+  const origin = typeof window !== 'undefined' && window.location.origin 
+    ? window.location.origin 
+    : 'https://fourmulasteps-app.vercel.app';
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: displayName
-      }
+      },
+      emailRedirectTo: `${origin}/#app`
     }
   });
 
