@@ -56,12 +56,24 @@ const MathText = ({ text }) => {
   useEffect(() => {
     if (!containerRef.current || !text) return;
 
-    const parts = text.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g);
+    let targetText = String(text).trim();
+
+    // $ も $$ も含まないが、LaTeXのバックスラッシュ記法（\vec, \frac, \text 等）を含む場合、
+    // 全体を数式として扱う
+    if (!targetText.includes('$')) {
+      const hasLatex = /\\[a-zA-Z]+|\^|_|\\{/.test(targetText);
+      const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(targetText);
+      if (hasLatex && !hasJapanese) {
+        targetText = `$$${targetText}$$`;
+      }
+    }
+
+    const parts = targetText.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g);
     containerRef.current.innerHTML = '';
 
     parts.forEach(part => {
       if (part.startsWith('$$') && part.endsWith('$$')) {
-        const math = part.slice(2, -2);
+        const math = part.slice(2, -2).trim();
         const span = document.createElement('div');
         span.className = "my-2 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
         try {
@@ -71,7 +83,7 @@ const MathText = ({ text }) => {
         }
         containerRef.current.appendChild(span);
       } else if (part.startsWith('$') && part.endsWith('$')) {
-        const math = part.slice(1, -1);
+        const math = part.slice(1, -1).trim();
         const span = document.createElement('span');
         span.className = "px-0.5 text-indigo-200 font-medium";
         try {
@@ -80,7 +92,20 @@ const MathText = ({ text }) => {
           span.innerText = part;
         }
         containerRef.current.appendChild(span);
-      } else {
+      } else if (part.trim() !== '') {
+        const hasRawLatex = /\\[a-zA-Z]+/.test(part);
+        const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(part);
+        if (hasRawLatex && !hasJapanese) {
+          const span = document.createElement('div');
+          span.className = "my-1 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
+          try {
+            katex.render(part.trim(), span, { displayMode: true, throwOnError: false });
+            containerRef.current.appendChild(span);
+            return;
+          } catch {
+            // pass
+          }
+        }
         const span = document.createElement('span');
         span.innerText = part;
         containerRef.current.appendChild(span);
@@ -100,28 +125,34 @@ export function enrichFormulaWithCollection(formulaInput) {
   const matched = findFormulaInCollection(name);
 
   if (matched) {
+    const rawLatex = matched.latex || formulaInput.latex || "";
+    const rawDesc = formulaInput.desc || (rawLatex ? `$$${rawLatex}$$` : matched.summary);
     return {
       id: matched.id,
       name: matched.name,
       subject: matched.subject || formulaInput.subject || "高校数学",
       category: matched.category || formulaInput.category || "公式",
-      desc: formulaInput.desc || (matched.latex ? `$$${matched.latex}$$` : matched.summary),
-      latex: matched.latex || "",
+      desc: rawDesc.startsWith('$') || !rawDesc.includes('\\') ? rawDesc : `$$${rawDesc}$$`,
+      latex: rawLatex,
       summary: matched.summary || "",
       body: matched.body || "",
       isFromCollection: true
     };
   }
 
+  const rawDesc = formulaInput.desc || formulaInput.latex || "";
+  const rawLatex = formulaInput.latex || (rawDesc.includes('\\') ? rawDesc : "");
+  const formattedDesc = (rawDesc && !rawDesc.includes('$') && rawDesc.includes('\\')) ? `$$${rawDesc}$$` : rawDesc;
+
   return {
     id: formulaInput.id || `custom_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     name: name,
     subject: formulaInput.subject || "数学",
     category: formulaInput.category || "公式",
-    desc: formulaInput.desc || "",
-    latex: formulaInput.latex || "",
-    summary: formulaInput.summary || formulaInput.desc || "",
-    body: formulaInput.body || formulaInput.desc || "",
+    desc: formattedDesc,
+    latex: rawLatex,
+    summary: formulaInput.summary || rawDesc,
+    body: formulaInput.body || rawDesc,
     isFromCollection: false
   };
 }
@@ -1481,9 +1512,13 @@ export default function FourmulaStepsApp() {
                           </div>
 
                           {/* 数式プレビュー */}
-                          {f.desc && (
-                            <div className="text-slate-300 font-mono bg-slate-950/80 p-2.5 rounded border border-slate-800 mb-2 overflow-x-auto">
-                              <MathText text={f.desc} />
+                          {(f.latex || f.desc) && (
+                            <div className="text-slate-200 bg-slate-950/90 p-3 rounded-lg border border-slate-800 mb-2 overflow-x-auto text-center">
+                              <MathText text={
+                                f.latex 
+                                  ? (f.latex.startsWith('$') ? f.latex : `$$${f.latex}$$`) 
+                                  : (f.desc.startsWith('$') ? f.desc : (f.desc.includes('\\') ? `$$${f.desc}$$` : f.desc))
+                              } />
                             </div>
                           )}
 
