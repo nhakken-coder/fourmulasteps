@@ -227,10 +227,71 @@ const initialProblems = [
   }
 ];
 
-export default function FourmulaStepsApp() {
+// 万が一の画面クラッシュを防ぐエラー境界コンポーネント
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("FourmulaSteps ErrorBoundary caught:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center font-sans">
+          <div className="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mb-4 text-2xl font-bold">
+            !
+          </div>
+          <h2 className="text-xl font-bold mb-2">画面の読み込みでエラーが発生しました</h2>
+          <p className="text-slate-400 text-xs sm:text-sm max-w-md mb-6 leading-relaxed">
+            以前のバージョンのキャッシュが残っている可能性があります。下のボタンから最新版へ更新してください。
+          </p>
+          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-rose-300 font-mono mb-6 max-w-lg text-left overflow-x-auto">
+            {this.state.error?.message || String(this.state.error)}
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                window.location.href = window.location.pathname + '?t=' + Date.now() + '#app';
+                window.location.reload();
+              }}
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl text-sm transition shadow-lg"
+            >
+              アプリを再読み込み
+            </button>
+            <button
+              onClick={() => {
+                window.location.href = window.location.pathname + '?t=' + Date.now();
+                window.location.reload();
+              }}
+              className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 font-bold rounded-xl text-sm border border-slate-700 transition"
+            >
+              トップへ戻る
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function FourmulaStepsAppInner() {
   const [viewMode, setViewMode] = useState(() => {
-    if (typeof window !== 'undefined' && window.location.hash === '#app') {
+    // ネイティブアプリ（iOS/Android）の場合は常に直接アプリ画面を開く
+    if (Capacitor.isNativePlatform()) {
       return 'app';
+    }
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      const search = window.location.search;
+      if (hash === '#app' || search.includes('view=app') || hash.includes('app')) {
+        return 'app';
+      }
     }
     return 'lp';
   });
@@ -2435,5 +2496,13 @@ export default function FourmulaStepsApp() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function FourmulaStepsApp() {
+  return (
+    <ErrorBoundary>
+      <FourmulaStepsAppInner />
+    </ErrorBoundary>
   );
 }
