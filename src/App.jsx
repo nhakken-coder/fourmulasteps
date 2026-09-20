@@ -38,6 +38,7 @@ import {
   BookmarkCheck,
   BarChart2,
   CheckCircle2,
+  HelpCircle,
   XCircle,
   AlertTriangle,
   Trash2,
@@ -46,8 +47,7 @@ import {
   Library,
   X,
   PlusCircle,
-  LogOut,
-  UserCheck
+  LogOut
 } from 'lucide-react';
 
 const MathText = ({ text }) => {
