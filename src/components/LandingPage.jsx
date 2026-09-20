@@ -110,7 +110,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
     },
     {
       q: "無料体験と有料プランの違いは何ですか？",
-      a: "無料体験では3問まで基本の4ステップ解説をお試しいただけます。月額480円の一般会員は月100問のAI解析と基礎定着類題・弱点グラフが利用でき、月額980円のプレミアム会員は月300問に加えて「途中式を1行も飛ばさない超詳細解説」「入試応用類題」「複数別解」「手書き添削」「AI学習処方箋」など全ての難関大対策機能が無制限でご利用いただけます。"
+      a: "無料体験では3問まで基本の4ステップ解説をお試しいただけます。月額480円の一般会員は月100問のAI解析と基礎定着類題・弱点グラフが利用でき、月額980円のプレミアム会員は月300問に加えて「途中式を1行も飛ばさない超詳細解説」「入試応用類題」「複数別解」「マイ弱点ノートのPDF一括出力」など全ての難関大対策機能が無制限でご利用いただけます。"
     },
     {
       q: "いつでも解約できますか？",
@@ -842,10 +842,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
                     <span>超詳細・行間完全解説モード（途中式全展開）</span>
                   </li>
-                  <li className="flex items-center gap-2.5 font-semibold text-white">
-                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>手書き途中式のミス特定（答案添削機能）</span>
-                  </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
                     <span>思考定着 類題2問（基礎確認 ＋ 入試応用）</span>
@@ -853,10 +849,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
                     <span>複数ルートの別解網羅（ベクトル/幾何/代数等）</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>AIパーソナライズ学習処方箋 ＆ 弱点特訓ドリル</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
@@ -919,12 +911,6 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     <td className="py-3 px-4 text-amber-300 font-semibold">超詳細・行間完全解説</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-white">手書き途中式の答案添削</td>
-                    <td className="py-3 px-4 text-slate-600">-</td>
-                    <td className="py-3 px-4 text-slate-600">-</td>
-                    <td className="py-3 px-4 text-emerald-400 font-bold">◯ ミス特定・改善指導</td>
-                  </tr>
-                  <tr>
                     <td className="py-3 px-4 font-semibold text-white">思考定着 類題自動生成</td>
                     <td className="py-3 px-4 text-slate-600">-</td>
                     <td className="py-3 px-4">1問（基礎定着）</td>
@@ -937,10 +923,10 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     <td className="py-3 px-4 text-white font-semibold">複数ルート網羅（ベクトル/幾何等）</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-white">弱点診断・学習処方箋</td>
+                    <td className="py-3 px-4 font-semibold text-white">弱点診断・つまずき分析</td>
                     <td className="py-3 px-4 text-slate-600">-</td>
                     <td className="py-3 px-4">つまずき割合グラフ</td>
-                    <td className="py-3 px-4 text-amber-300 font-semibold">AI学習処方箋 ＋ 弱点特訓ドリル</td>
+                    <td className="py-3 px-4 text-white font-semibold">つまずき割合グラフ ＋ 処方箋アドバイス</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 font-semibold text-white">解析履歴の保存</td>

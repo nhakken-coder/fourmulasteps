@@ -190,7 +190,7 @@ export default function AuthModal({
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>
                   {isPremium 
-                    ? '月300問・超詳細思考プロセス・手書き添削・全機能解放' 
+                    ? '月300問・超詳細思考プロセス・複数別解・PDF出力・全機能解放' 
                     : '月100問のAI 4ステップ解析・類題演習・弱点分析'}
                 </span>
               </div>
