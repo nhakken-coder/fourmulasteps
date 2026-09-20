@@ -860,11 +860,11 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>直近30件の解析履歴保存</span>
+                    <span>直近100件の解析履歴保存</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>解析履歴の無制限保存 ＆ 弱点フォルダ分け</span>
+                    <span>解析履歴の弱点フォルダ分け管理</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
@@ -948,7 +948,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     <td className="py-3 px-4 font-semibold text-white">解析履歴の保存</td>
                     <td className="py-3 px-4 text-slate-600">-</td>
                     <td className="py-3 px-4">直近 30件</td>
-                    <td className="py-3 px-4 text-white font-semibold">無制限（フォルダ分類可能）</td>
+                    <td className="py-3 px-4 text-white font-semibold">直近 100件（フォルダ分類可能）</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 font-semibold text-white">マイ弱点ノートPDF出力・印刷</td>

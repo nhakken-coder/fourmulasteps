@@ -206,7 +206,7 @@ export async function recordAiUsageLog({
       status,
       createdAt: new Date().toISOString()
     });
-    localStorage.setItem('fourmulasteps_ai_history', JSON.stringify(localHistory.slice(0, 50)));
+    localStorage.setItem('fourmulasteps_ai_history', JSON.stringify(localHistory.slice(0, 100)));
   } catch {}
 
   if (!supabase) return { totalTokens, estimatedCostUsd };
@@ -337,7 +337,7 @@ export async function fetchAiUsageHistory() {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(30);
+      .limit(100);
 
     if (error) {
       console.warn('fetchAiUsageHistory error:', error.message);
