@@ -682,7 +682,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 <h3 className="text-lg font-bold text-slate-900 mb-1">【集める】</h3>
                 <span className="text-xs font-semibold text-[#D9532F] block mb-3">条件と公式を整理する</span>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  与えられた条件・図形の性質・使用できそうな数学公式（全213）を抽出し、解法の武器を揃えます。
+                  与えられた条件・図形の性質・使用できそうな数学公式（全219）を抽出し、解法の武器を揃えます。
                 </p>
               </div>
               <div className="mt-5 pt-3 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
@@ -808,10 +808,10 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 </div>
                 <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">機能 04</span>
                 <h3 className="text-xl font-bold text-slate-900 mt-1 mb-2.5">
-                  大学入試数学公式集（213公式）完全連動
+                  大学入試数学公式集（219公式）完全連動
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                  数Ⅰ・Aから数Ⅲ・Cまで、入試必須の全213公式を内蔵。AI解説に登場した公式をクリックすると、使い方や導出・注意点へ瞬時にアクセスできます。
+                  数Ⅰ・Aから数Ⅲ・Cまで、入試必須の全219公式を内蔵。AI解説に登場した公式をクリックすると、使い方や導出・注意点へ瞬時にアクセスできます。
                 </p>
                 <div className="mb-4">
                   <button
@@ -820,7 +820,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D9532F] hover:text-[#C84826] bg-orange-50 hover:bg-orange-100/80 px-3 py-1.5 rounded-lg border border-orange-200 transition"
                   >
                     <BookOpen className="w-3.5 h-3.5" />
-                    <span>公式ライブラリ（全213公式）を今すぐ見る →</span>
+                    <span>公式ライブラリ（全219公式）を今すぐ見る →</span>
                   </button>
                 </div>
               </div>
@@ -1070,7 +1070,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-slate-500 shrink-0" />
-                    <span>公式ライブラリ（全213公式）閲覧</span>
+                    <span>公式ライブラリ（全219公式）閲覧</span>
                   </li>
                 </ul>
               </div>
@@ -1139,7 +1139,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>公式集（全213公式）完全連動</span>
+                    <span>公式集（全219公式）完全連動</span>
                   </li>
                 </ul>
               </div>
@@ -1225,7 +1225,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#E05A36] shrink-0" />
-                    <span>公式集（全213公式）完全連動</span>
+                    <span>公式集（全219公式）完全連動</span>
                   </li>
                 </ul>
               </div>
@@ -1310,7 +1310,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                     <td className="py-3 px-4 text-emerald-400 font-bold">◯ A4印刷対応PDF一括生成</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-white">公式集（全213公式）</td>
+                    <td className="py-3 px-4 font-semibold text-white">公式集（全219公式）</td>
                     <td className="py-3 px-4">閲覧可能</td>
                     <td className="py-3 px-4">完全連動</td>
                     <td className="py-3 px-4 text-white">公式マスター状態管理連動</td>

@@ -32,6 +32,7 @@ export default function MyPage({
   userLogs = {},
   onSelectProblem,
   onOpenUpgrade,
+  onOpenLegal,
   onLogout
 }) {
   const plan = userProfile?.plan || 'free';
@@ -175,6 +176,29 @@ export default function MyPage({
               <span>毎月1日に解析枠がリセットされます</span>
               <span>利用率 {usagePercentage}%</span>
             </div>
+
+            {monthlyUsageCount >= monthlyLimit && (
+              <div className="mt-3 p-3.5 rounded-xl bg-gradient-to-r from-indigo-950/80 via-slate-900 to-amber-950/40 border border-indigo-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                    今月の解析枠（{monthlyLimit}問）をすべて活用いただきました！
+                  </h4>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    初見問題の4ステップ思考を着実に定着させるため、解析枠拡大プラン（一般プラン: 月100問 / プレミアムプラン: 月300問）をご検討ください。
+                  </p>
+                </div>
+                {onOpenUpgrade && (
+                  <button
+                    type="button"
+                    onClick={onOpenUpgrade}
+                    className="px-3.5 py-1.5 bg-gradient-to-r from-[#E05A36] to-amber-600 hover:from-[#c84826] hover:to-amber-500 text-white font-bold text-xs rounded-lg shadow-sm transition whitespace-nowrap cursor-pointer shrink-0"
+                  >
+                    プランをアップグレード
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4 flex flex-col justify-between">
@@ -427,6 +451,35 @@ export default function MyPage({
           </div>
         )}
       </div>
+
+      {/* 法的表記リンク */}
+      {onOpenLegal && (
+        <div className="pt-6 pb-2 border-t border-slate-800 text-center flex items-center justify-center gap-4 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={() => onOpenLegal('terms')}
+            className="hover:text-slate-300 transition cursor-pointer"
+          >
+            利用規約
+          </button>
+          <span>•</span>
+          <button
+            type="button"
+            onClick={() => onOpenLegal('privacy')}
+            className="hover:text-slate-300 transition cursor-pointer"
+          >
+            プライバシーポリシー
+          </button>
+          <span>•</span>
+          <button
+            type="button"
+            onClick={() => onOpenLegal('tokusho')}
+            className="hover:text-slate-300 transition cursor-pointer"
+          >
+            特定商取引法に基づく表記
+          </button>
+        </div>
+      )}
     </div>
   );
 }
