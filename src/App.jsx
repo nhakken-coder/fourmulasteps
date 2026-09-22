@@ -1180,162 +1180,165 @@ function FourmulaStepsAppInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans p-4 md:p-8 pb-24">
-      <header className="max-w-5xl mx-auto mb-6 border-b border-[#E2DBD0] pb-4 space-y-3">
-        {/* 上段: ロゴ・LP戻るボタン & ユーザー情報 */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setViewMode('lp');
-                if (typeof window !== 'undefined') {
-                  window.location.hash = '#lp';
-                  window.scrollTo(0, 0);
-                }
-              }}
-              className="px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
-              title="公式紹介LPページへ戻る"
-            >
-              <span>←</span>
-              <span>公式LPへ</span>
-            </button>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="bg-slate-900 text-white font-black px-2 py-0.5 rounded text-xs sm:text-sm tracking-wider shrink-0">4STEPS</span>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight shrink-0">
-                  fourmulasteps
-                </h1>
-                {isSupabaseConfigured && (
-                  <span 
-                    title="学習履歴や登録問題が安全にクラウドへ自動保存されています"
-                    className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium shrink-0 whitespace-nowrap cursor-help"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    クラウド同期中
-                  </span>
-                )}
+    <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans pb-24">
+      {/* アプリトップヘッダー（LPと明確に識別できるスレートネイビーのツールバー） */}
+      <header className="bg-slate-900 text-white border-b border-slate-800 shadow-md mb-6">
+        <div className="max-w-5xl mx-auto px-4 py-3 sm:py-4 space-y-3">
+          {/* 上段: ロゴ・LP戻るボタン & ユーザー情報 */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setViewMode('lp');
+                  if (typeof window !== 'undefined') {
+                    window.location.hash = '#lp';
+                    window.scrollTo(0, 0);
+                  }
+                }}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
+                title="公式紹介LPページへ戻る"
+              >
+                <span>←</span>
+                <span>公式LPへ</span>
+              </button>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="bg-[#D9532F] text-white font-black px-2 py-0.5 rounded text-xs sm:text-sm tracking-wider shrink-0">4STEPS</span>
+                  <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight shrink-0">
+                    fourmulasteps
+                  </h1>
+                  {isSupabaseConfigured && (
+                    <span 
+                      title="学習履歴や登録問題が安全にクラウドへ自動保存されています"
+                      className="text-[10px] text-emerald-300 bg-emerald-950/80 border border-emerald-700/60 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 font-medium shrink-0 whitespace-nowrap cursor-help"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      クラウド同期中
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">高校数学 4ステップ思考法プラットフォーム（初見問題が解ける再現プロセス）</p>
               </div>
-              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">高校数学 4ステップ思考法プラットフォーム（初見問題が解ける再現プロセス）</p>
             </div>
+
+            {/* ログインユーザー情報・ログアウト */}
+            {currentUser?.email ? (
+              <div className="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-2xs">
+                <button
+                  onClick={() => setActiveTab('mypage')}
+                  className="flex items-center gap-2 text-left hover:opacity-80 transition cursor-pointer"
+                  title="マイページを開く"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                  <span className="text-slate-200 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
+                    {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
+                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 border ${
+                    userProfile?.plan === 'premium' 
+                      ? 'bg-orange-500/20 text-orange-300 border-orange-500/40' 
+                      : userProfile?.plan === 'standard' 
+                      ? 'bg-slate-700 text-slate-200 border-slate-600' 
+                      : 'bg-slate-700/80 text-slate-300 border-slate-600'
+                  }`}>
+                    {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
+                  </span>
+                </button>
+                <button
+                  onClick={async () => {
+                    await signOutUser();
+                    setCurrentUser(null);
+                    setUserProfile(null);
+                    setViewMode('lp');
+                  }}
+                  title="ログアウトしてLPに戻る"
+                  className="text-slate-400 hover:text-rose-400 p-1 ml-0.5 rounded hover:bg-slate-700/60 transition cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : null}
           </div>
 
-          {/* ログインユーザー情報・ログアウト */}
-          {currentUser?.email ? (
-            <div className="flex items-center gap-2 bg-white border border-[#E2DBD0] px-3 py-1.5 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-2xs">
+          {/* 下段: ナビゲーションタブ */}
+          <div className="flex items-center justify-between bg-slate-800/90 p-1.5 rounded-xl border border-slate-700/80 text-xs sm:text-sm flex-wrap gap-1.5 shadow-inner">
+            <div className="flex items-center gap-1 flex-wrap">
+              <button
+                onClick={() => setActiveTab('solve')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === 'solve' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                演習・解説
+              </button>
+              <button
+                onClick={() => setActiveTab('similar')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === 'similar' ? 'bg-emerald-500 text-white font-bold shadow-xs' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                類似問題
+              </button>
+              <button
+                onClick={() => setActiveTab('formulas')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === 'formulas' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <Library className="w-4 h-4 text-slate-400" />
+                公式集 ({MATH_FORMULAS.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('analysis')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === 'analysis' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
+              >
+                <BarChart2 className="w-4 h-4 text-slate-400" />
+                弱点分析
+              </button>
               <button
                 onClick={() => setActiveTab('mypage')}
-                className="flex items-center gap-2 text-left hover:opacity-80 transition cursor-pointer"
-                title="マイページを開く"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === 'mypage' ? 'bg-[#D9532F] text-white font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                <span className="text-slate-800 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
-                  {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
-                </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 border ${
-                  userProfile?.plan === 'premium' 
-                    ? 'bg-orange-100 text-[#D9532F] border-orange-200' 
-                    : userProfile?.plan === 'standard' 
-                    ? 'bg-slate-100 text-slate-700 border-slate-300' 
-                    : 'bg-slate-100 text-slate-600 border-slate-200'
-                }`}>
-                  {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
-                </span>
-              </button>
-              <button
-                onClick={async () => {
-                  await signOutUser();
-                  setCurrentUser(null);
-                  setUserProfile(null);
-                  setViewMode('lp');
-                }}
-                title="ログアウトしてLPに戻る"
-                className="text-slate-400 hover:text-rose-500 p-1 ml-0.5 rounded hover:bg-slate-100 transition cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
+                <User className="w-4 h-4 text-orange-200" />
+                マイページ
               </button>
             </div>
-          ) : null}
-        </div>
 
-        {/* 下段: ナビゲーションタブ */}
-        <div className="flex items-center justify-between bg-white p-1.5 rounded-xl border border-[#E2DBD0] text-xs sm:text-sm flex-wrap gap-1.5 shadow-2xs">
-          <div className="flex items-center gap-1 flex-wrap">
-            <button
-              onClick={() => setActiveTab('solve')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                activeTab === 'solve' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              演習・解説
-            </button>
-            <button
-              onClick={() => setActiveTab('similar')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                activeTab === 'similar' ? 'bg-emerald-600 text-white shadow-xs' : 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50'
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-              類似問題
-            </button>
-            <button
-              onClick={() => setActiveTab('formulas')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                activeTab === 'formulas' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Library className="w-4 h-4 text-slate-500" />
-              公式集 ({MATH_FORMULAS.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('analysis')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                activeTab === 'analysis' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <BarChart2 className="w-4 h-4 text-slate-500" />
-              弱点分析
-            </button>
-            <button
-              onClick={() => setActiveTab('mypage')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                activeTab === 'mypage' ? 'bg-[#D9532F] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <User className="w-4 h-4 text-orange-200" />
-              マイページ
-            </button>
-          </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setShowOnboarding(true)}
+                className="text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-700 hover:bg-slate-700/60 transition flex items-center gap-1 cursor-pointer"
+                title="使い方スタートガイドを表示"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+                <span className="hidden sm:inline">ガイド</span>
+              </button>
 
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setShowOnboarding(true)}
-              className="text-xs text-slate-600 hover:text-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition flex items-center gap-1 cursor-pointer"
-              title="使い方スタートガイドを表示"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">ガイド</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('scan');
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs ${
-                activeTab === 'scan'
-                  ? 'bg-[#C84826] text-white ring-2 ring-orange-200'
-                  : 'bg-[#D9532F] hover:bg-[#C84826] text-white shadow'
-              }`}
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>新しい問題を解析</span>
-            </button>
+              <button
+                onClick={() => {
+                  setActiveTab('scan');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs ${
+                  activeTab === 'scan'
+                    ? 'bg-[#C84826] text-white ring-2 ring-orange-200'
+                    : 'bg-[#D9532F] hover:bg-[#C84826] text-white shadow'
+                }`}
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>新しい問題を解析</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto space-y-6">
+      <main className="max-w-5xl mx-auto px-4 space-y-6">
         {/* 決済成功ウェルカムバナー */}
         {paymentNotice && (
           <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 shadow-xs flex items-center justify-between gap-3 animate-in fade-in duration-300">
@@ -1479,7 +1482,7 @@ function FourmulaStepsAppInner() {
               </div>
 
               {/* 4ステップアコーディオン */}
-              <div className="bg-white rounded-2xl p-6 border border-[#DDD6CA] shadow-xs space-y-4">
+              <div className="bg-[#FAF9F5] rounded-2xl p-6 border border-[#DDD6CA] shadow-xs space-y-4">
                 <div className="flex flex-col gap-3 pb-3 border-b border-slate-200">
                   <div className="flex items-center justify-between">
                     <h3 className="text-md font-bold text-slate-900 flex items-center gap-2">
@@ -2953,7 +2956,7 @@ function FourmulaStepsAppInner() {
       </main>
 
       {/* アプリ共通フッター */}
-      <footer className="max-w-5xl mx-auto mt-12 pt-6 pb-8 border-t border-[#E2DBD0] text-center space-y-3 no-print">
+      <footer className="max-w-5xl mx-auto px-4 mt-12 pt-6 pb-8 border-t border-[#E2DBD0] text-center space-y-3 no-print">
         <div className="flex items-center justify-center gap-4 text-xs text-slate-500 flex-wrap">
           <button
             type="button"
