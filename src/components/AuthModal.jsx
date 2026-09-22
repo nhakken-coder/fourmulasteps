@@ -106,15 +106,15 @@ export default function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-md bg-white border border-[#DDD6CA] rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー閉じるボタン */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition cursor-pointer"
           aria-label="閉じる"
         >
           <X className="w-5 h-5" />
@@ -122,30 +122,30 @@ export default function AuthModal({
 
         {/* タブ切り替え（有料決済時と通常時で切り替え） */}
         {mode === 'checkout' ? (
-          <div className="px-6 pt-6 pb-2 border-b border-slate-800 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#E05A36]/20 to-indigo-500/20 border border-[#E05A36]/40 text-[#E05A36] text-xs font-bold mb-2">
+          <div className="px-6 pt-6 pb-4 border-b border-slate-200 bg-[#FAF9F5]">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#D9532F] text-xs font-bold mb-2">
               <CreditCard className="w-3.5 h-3.5" />
               <span>有料プランお申し込み</span>
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
               <span>{planName}</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 font-normal">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-normal">
                 {planPrice}
               </span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               アカウントを作成後、Stripe決済画面へ進みます。
             </p>
           </div>
         ) : (
-          <div className="flex border-b border-slate-800 bg-slate-900/50">
+          <div className="flex border-b border-slate-200 bg-[#FAF9F5]">
             <button
               type="button"
               onClick={() => { setMode('register'); setErrorMsg(''); }}
-              className={`flex-1 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition ${
+              className={`flex-1 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
                 mode === 'register'
-                  ? 'border-[#E05A36] text-[#E05A36] bg-slate-800/40'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-[#D9532F] text-[#D9532F] bg-white'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               無料会員登録（体験）
@@ -153,10 +153,10 @@ export default function AuthModal({
             <button
               type="button"
               onClick={() => { setMode('login'); setErrorMsg(''); }}
-              className={`flex-1 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition ${
+              className={`flex-1 py-3.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
                 mode === 'login'
-                  ? 'border-[#E05A36] text-[#E05A36] bg-slate-800/40'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-[#D9532F] text-[#D9532F] bg-white'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               ログイン
@@ -168,14 +168,14 @@ export default function AuthModal({
         <div className="p-6 sm:p-7">
           {mode !== 'checkout' && (
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E05A36]/10 border border-[#E05A36]/30 text-[#E05A36] text-xs font-semibold mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#D9532F] text-xs font-semibold mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{mode === 'register' ? 'クレカ登録不要・月3問無料' : 'FourmulaStepsへようこそ'}</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
                 {mode === 'register' ? '無料登録してアプリを体験' : 'アカウントにログイン'}
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 {mode === 'register' 
                   ? '登録後、すぐに4ステップAI解法アプリを無料でお試しいただけます。' 
                   : '登録したメールアドレスとパスワードでログインしてください。'}
@@ -185,28 +185,28 @@ export default function AuthModal({
 
           {/* プランごとの特典バナー */}
           {mode === 'checkout' ? (
-            <div className="mb-5 p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-300 space-y-2">
-              <div className="flex items-center gap-2 text-white font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="mb-5 p-3.5 rounded-xl bg-[#FAF9F5] border border-slate-200 text-xs text-slate-700 space-y-2">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
                   {isPremium 
                     ? '月300問・超詳細思考プロセス・複数別解・PDF出力・全機能解放' 
                     : '月100問のAI 4ステップ解析・類題演習・弱点分析'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+              <div className="flex items-center gap-2 text-slate-500">
+                <ShieldCheck className="w-4 h-4 text-slate-600 shrink-0" />
                 <span>世界基準のStripeによる安全な暗号化決済（いつでも解約可）</span>
               </div>
             </div>
           ) : mode === 'register' ? (
-            <div className="mb-5 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 space-y-1.5">
-              <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <div className="mb-5 p-3.5 rounded-xl bg-[#FAF9F5] border border-slate-200 text-xs text-slate-700 space-y-1.5">
+              <div className="flex items-center gap-2 text-emerald-700 font-semibold">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>無料プランで毎月3問までAI徹底解析</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-2 text-slate-600">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>登録は30秒・クレジットカード不要</span>
               </div>
             </div>
@@ -214,8 +214,8 @@ export default function AuthModal({
 
           {/* エラーメッセージ */}
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-red-950/50 border border-red-500/40 text-xs text-red-200 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -224,52 +224,52 @@ export default function AuthModal({
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode !== 'login' && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   お名前・ニックネーム（任意）
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="例: 受験生A"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm bg-slate-800/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#E05A36] focus:ring-1 focus:ring-[#E05A36] transition"
+                    className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#D9532F] focus:ring-1 focus:ring-[#D9532F] transition font-sans"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 メールアドレス
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm bg-slate-800/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#E05A36] focus:ring-1 focus:ring-[#E05A36] transition"
+                  className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#D9532F] focus:ring-1 focus:ring-[#D9532F] transition font-sans"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 パスワード（6文字以上）
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm bg-slate-800/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#E05A36] focus:ring-1 focus:ring-[#E05A36] transition"
+                  className="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#D9532F] focus:ring-1 focus:ring-[#D9532F] transition font-sans"
                 />
               </div>
             </div>
@@ -277,7 +277,7 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 px-4 bg-[#E05A36] hover:bg-[#C84826] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-[#E05A36]/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full mt-2 py-3.5 px-4 bg-[#D9532F] hover:bg-[#C84826] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <span>
                 {loading 
@@ -293,14 +293,14 @@ export default function AuthModal({
           </form>
 
           {/* 下部リンク */}
-          <div className="mt-5 text-center text-xs text-slate-400">
+          <div className="mt-5 text-center text-xs text-slate-500">
             {mode === 'checkout' ? (
               <p>
                 すでにアカウントをお持ちの方は{' '}
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-[#E05A36] hover:underline font-semibold"
+                  className="text-[#D9532F] hover:underline font-bold cursor-pointer"
                 >
                   ログインしてお支払いへ
                 </button>
@@ -311,7 +311,7 @@ export default function AuthModal({
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-[#E05A36] hover:underline font-semibold"
+                  className="text-[#D9532F] hover:underline font-bold cursor-pointer"
                 >
                   ログインはこちら
                 </button>
@@ -329,7 +329,7 @@ export default function AuthModal({
                     }
                     setErrorMsg(''); 
                   }}
-                  className="text-[#E05A36] hover:underline font-semibold"
+                  className="text-[#D9532F] hover:underline font-bold cursor-pointer"
                 >
                   {selectedPlan ? '新規登録してお支払いへ' : '無料会員登録はこちら'}
                 </button>
