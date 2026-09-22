@@ -1371,10 +1371,7 @@ function FourmulaStepsAppInner() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-slate-900">あなたの問題をAIで4ステップ解析</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-orange-50 text-[#D9532F] border border-orange-200 font-bold">
-                        解法プロセス可視化
-                      </span>
+                      <span className="text-sm font-bold text-slate-900">問題を提示</span>
                     </div>
                     <div className="text-xs text-slate-500 mt-0.5">
                       問題用紙の撮影、保存画像、またはテキスト直接入力から即座に分解・解説します
