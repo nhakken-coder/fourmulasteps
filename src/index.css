@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* 数式レンダリング（KaTeX）の高コントラスト視認性向上 */
+.katex {
+  color: #0f172a !important; /* slate-900 */
+}
+.katex-display {
+  color: #0f172a !important;
+}
+.katex .mord, .katex .mbin, .katex .mrel, .katex .mopen, .katex .mclose, .katex .mpunct {
+  color: #0f172a !important;
+}

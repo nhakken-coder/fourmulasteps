@@ -22,6 +22,37 @@ import {
   Lock
 } from 'lucide-react';
 import { deleteProblemFromSupabase, saveProblemToSupabase } from '../lib/supabase';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+function MathText({ text, className = '' }) {
+  if (!text) return null;
+  const parts = String(text).split(/(\$\$[\s\S]*?\$\$|\$[^$\n]+?\$)/g);
+  return (
+    <span className={className}>
+      {parts.map((part, index) => {
+        if (part.startsWith('$$') && part.endsWith('$$')) {
+          const math = part.slice(2, -2).trim();
+          try {
+            const html = katex.renderToString(math, { displayMode: true, throwOnError: false });
+            return <span key={index} dangerouslySetInnerHTML={{ __html: html }} className="block my-1 text-slate-900" />;
+          } catch {
+            return <span key={index}>{part}</span>;
+          }
+        } else if (part.startsWith('$') && part.endsWith('$')) {
+          const math = part.slice(1, -1).trim();
+          try {
+            const html = katex.renderToString(math, { displayMode: false, throwOnError: false });
+            return <span key={index} dangerouslySetInnerHTML={{ __html: html }} className="px-0.5 text-slate-900 font-semibold" />;
+          } catch {
+            return <span key={index}>{part}</span>;
+          }
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </span>
+  );
+}
 
 export default function MyPage({
   user,
@@ -154,7 +185,7 @@ export default function MyPage({
                 今月のAI解析利用状況
               </span>
               <span className="text-slate-800 font-mono font-bold">
-                <span className="text-[#D9532F] text-sm font-black">{monthlyUsageCount}</span> / {monthlyLimit} 問
+                <span className="text-[#D9532F] text-sm font-black">{Math.min(monthlyLimit, monthlyUsageCount)}</span> / {monthlyLimit} 問
                 <span className="text-slate-500 text-[11px] ml-1.5 font-normal">（残り {Math.max(0, monthlyLimit - monthlyUsageCount)} 問）</span>
               </span>
             </div>
@@ -408,11 +439,11 @@ export default function MyPage({
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#D9532F] transition line-clamp-2">
-                      {problem.title || '無題の問題'}
+                      <MathText text={problem.title || '無題の問題'} />
                     </h4>
 
                     <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                      {problem.goal || problem.question}
+                      <MathText text={problem.goal || problem.question} />
                     </p>
 
                     {/* つまずきステップのバッジ */}

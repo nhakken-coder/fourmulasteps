@@ -270,7 +270,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-slate-600">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-xs xl:text-sm font-medium text-slate-600 whitespace-nowrap">
             <a href="#problem" className="hover:text-slate-900 transition">開発背景</a>
             <a href="#method" className="hover:text-slate-900 transition">4ステップ思考法</a>
             <a href="#features" className="hover:text-slate-900 transition">4大機能</a>
@@ -825,9 +825,9 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 </div>
               </div>
               <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex flex-wrap gap-2 text-xs">
-                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅰ・A (48)</span>
-                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅱ・B (65)</span>
-                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅲ・C (100)</span>
+                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅰ・A (65)</span>
+                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅱ・B (101)</span>
+                <span className="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-700 font-medium">数Ⅲ・C (53)</span>
               </div>
             </div>
           </div>
@@ -919,6 +919,9 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
               <p className="text-[11px] text-slate-500">高校数学学習ツールとしての総合評価</p>
             </div>
           </div>
+          <p className="text-[11px] text-slate-500 text-center -mt-8 mb-10">
+            ※ 2026年3月 高校生・既卒生ベータモニター120名を対象としたアンケート調査（自社調べ・無記名回答）
+          </p>
 
           {/* 3名のモニターの声 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1061,8 +1064,8 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
 
                 <ul className="space-y-3 text-xs text-slate-300">
                   <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-slate-500 shrink-0" />
-                    <span><strong>体験用 AI問題解析 3問</strong></span>
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span><strong>毎月3問まで AI問題解析無料</strong>（毎月1日リセット）</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-slate-500 shrink-0" />
@@ -1082,7 +1085,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   className="w-full py-3.5 px-4 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition shadow-md shadow-emerald-900/30 flex items-center justify-center gap-1.5 active:scale-95"
                 >
                   <Sparkles className="w-4 h-4 text-emerald-200" />
-                  <span>無料で体験してみる（3問・クレカ不要）</span>
+                  <span>無料で体験してみる（毎月3問・クレカ不要）</span>
                 </button>
               </div>
             </div>
@@ -1181,7 +1184,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                   </div>
                   {billingCycle === 'yearly' && (
                     <span className="text-[11px] text-amber-400 mt-1 block">
-                      月あたり実質 約816円（年間1,960円お得）
+                      月あたり実質 約817円（年額一括9,800円・年間1,960円お得）
                     </span>
                   )}
                 </div>
@@ -1269,7 +1272,7 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
                   <tr>
                     <td className="py-3 px-4 font-semibold text-white">月間AI解析問題数</td>
-                    <td className="py-3 px-4">体験用 3問</td>
+                    <td className="py-3 px-4">毎月3問（毎月1日リセット）</td>
                     <td className="py-3 px-4 font-bold text-white">100問 /月</td>
                     <td className="py-3 px-4 font-bold text-[#E05A36]">300問 /月</td>
                   </tr>
@@ -1479,6 +1482,23 @@ export default function LandingPage({ onLaunchApp, onOpenFormulas, user }) {
           </div>
         </div>
       </footer>
+
+      {/* スマホ閲覧時 固定ボトムCTAバー */}
+      <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-[#E8E2D7] shadow-xl md:hidden z-40 flex items-center justify-between gap-3">
+        <div className="text-left pl-1">
+          <div className="text-[10px] text-[#D9532F] font-bold">クレカ不要・毎月3問無料</div>
+          <div className="text-xs font-black text-slate-900">4ステップAI解法アプリ</div>
+        </div>
+        <button
+          type="button"
+          onClick={handleFreeExperience}
+          className="px-5 py-2.5 text-xs font-bold text-white bg-[#D9532F] hover:bg-[#C84826] rounded-xl shadow-md transition active:scale-95 flex items-center gap-1.5 shrink-0"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-orange-200" />
+          <span>無料で体験する</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
 
       {/* 会員登録・ログイン・有料決済直結モーダル */}
       <AuthModal

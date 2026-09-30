@@ -101,7 +101,7 @@ const MathText = ({ text }) => {
       if (part.startsWith('$$') && part.endsWith('$$')) {
         const math = part.slice(2, -2).trim();
         const div = document.createElement('div');
-        div.className = "my-2 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
+        div.className = "my-2 text-center text-slate-900 font-mono text-base overflow-x-auto py-1 font-semibold";
         try {
           katex.render(math, div, { displayMode: true, throwOnError: false });
         } catch {
@@ -111,7 +111,7 @@ const MathText = ({ text }) => {
       } else if (part.startsWith('$') && part.endsWith('$')) {
         const math = part.slice(1, -1).trim();
         const span = document.createElement('span');
-        span.className = "px-0.5 text-indigo-200 font-medium";
+        span.className = "px-0.5 text-slate-900 font-bold";
         try {
           katex.render(math, span, { displayMode: false, throwOnError: false });
         } catch {
@@ -124,7 +124,7 @@ const MathText = ({ text }) => {
         const hasJapanese = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(normalizedPart);
         if (hasRawLatex && !hasJapanese && !normalizedPart.includes('\n')) {
           const div = document.createElement('div');
-          div.className = "my-1 text-center text-indigo-300 font-mono text-base overflow-x-auto py-1";
+          div.className = "my-1 text-center text-slate-900 font-mono text-base overflow-x-auto py-1 font-semibold";
           try {
             katex.render(normalizedPart.trim(), div, { displayMode: true, throwOnError: false });
             containerRef.current.appendChild(div);
@@ -197,12 +197,95 @@ export function enrichFormulaWithCollection(formulaInput) {
   };
 }
 
+function detectMathFolder(data, formulas = []) {
+  const combinedText = `${data.title || ''} ${data.question || ''} ${data.goal || ''} ${data.step1 || ''} ${data.step2 || ''} ${data.step3 || ''} ${data.step4 || ''}`.toLowerCase();
+  
+  if (/ベクトル|内積|位置ベクトル|空間座標|空間ベクトル/.test(combinedText)) return 'ベクトル';
+  if (/微分|積分|極限|導関数|不定積分|定積分|接線/.test(combinedText)) return '微積分';
+  if (/数列|等差|等比|漸化式|数学的帰納法|階差数列|シグマ/.test(combinedText)) return '数列';
+  if (/確率|場合の数|順列|組合せ|反復試行|条件付き確率|サイコロ|くじ/.test(combinedText)) return '確率・場合の数';
+  if (/素数|整数|約数|倍数|ユークリッド|合同式|互いに素|剰余/.test(combinedText)) return '整数';
+  if (/複素数|極形式|ド・モアブル|複素数平面/.test(combinedText)) return '複素数平面';
+  if (/相加.*相乗|相乗.*相加|不等式の証明|等号成立|式と証明|恒等式/.test(combinedText)) return '式と証明';
+  if (/三角関数|加法定理|正弦定理|余弦定理|三角比|正弦|余弦|正接/.test(combinedText)) return '三角比・三角関数';
+  if (/指数|対数|\blog\b|常用対数/.test(combinedText)) return '指数・対数';
+  if (/2次関数|二次関数|放物線|平方完成|判別式|解の配置/.test(combinedText)) return '二次関数';
+
+  if (formulas && formulas.length > 0) {
+    const cat = formulas[0].category || formulas[0].subject;
+    if (cat) return cat;
+  }
+
+  return '要復習・苦手';
+}
+
 const initialProblems = [
   {
     id: 1,
+    title: "相加平均と相乗平均の大小関係",
+    university: "標準入試問題（数学Ⅱ 式と証明）",
+    difficulty: "標準",
+    folder: "式と証明",
+    isSample: true,
+    goal: "不等式 $a + \\frac{1}{a} \\geqq 2$ が成り立つことを証明し、等号成立条件を求める",
+    question: "$a > 0$ のとき、不等式 $a + \\frac{1}{a} \\geqq 2$ が成り立つことを証明せよ。また、等号が成り立つのはどのようなときか。",
+    imageUrl: null,
+    steps: [
+      {
+        step: 1,
+        title: "手順1：何を求めるのかを明確に把握する",
+        badge: "【理解する】問題の前提・制約・求めるゴールを把握する",
+        content: "【求めるべき結論（ゴール）】\n① 不等式 $a + \\frac{1}{a} \\geqq 2$ の証明\n② 等号が成り立つ条件の決定\n\n【前提と制約】\n$a > 0$（正の実数）という制約があるため、分母が0にならず、かつ正の数に関する不等式定理（相加・相乗平均の関係）の適用条件を満たしている。"
+      },
+      {
+        step: 2,
+        title: "手順2：問題文で与えられた条件と使える性質を整理する",
+        badge: "【集める】与えられた条件・性質・使える公式を洗い出す",
+        content: "手札（使える条件と公式）を整理する：\n・条件①：$a > 0$\n・着眼点：$a$ と $\\frac{1}{a}$ は互いに「逆数」の関係にあり、積をとると $a \\cdot \\frac{1}{a} = 1$（定数）になる。\n・使える公式：相加平均・相乗平均の大小関係（$x > 0, y > 0$ のとき $\\frac{x+y}{2} \\geqq \\sqrt{xy}$、等号成立は $x=y$ のとき）"
+      },
+      {
+        step: 3,
+        title: "手順3：条件を数式や公式の形へ変換する",
+        badge: "【形にする】条件を数式・図・座標・方程式へ翻訳する",
+        content: "$x = a, y = \\frac{1}{a}$ として相加・相乗平均の不等式に当てはめる。\n$a > 0$ より $\\frac{1}{a} > 0$ であるから、適用条件を満たす。\n\n$$\\frac{a + \\frac{1}{a}}{2} \\geqq \\sqrt{a \\cdot \\frac{1}{a}}$$\n\n両辺を2倍して目的の形を整える準備をする。"
+      },
+      {
+        step: 4,
+        title: "手順4：式を変形・展開して結論を導く",
+        badge: "【動かす】計算・論理展開を実行し、吟味・検算して結論を導く",
+        content: "【式変形と証明】\n$$\\frac{a + \\frac{1}{a}}{2} \\geqq \\sqrt{1} = 1$$\n両辺に2を掛けて：\n$$a + \\frac{1}{a} \\geqq 2$$\n\n【等号成立条件の吟味】\n等号が成り立つのは $a = \\frac{1}{a}$ のとき。\n両辺に $a$ を掛けると $a^2 = 1$。$a > 0$ より $a = 1$ のときである。\n\n【結論】\nしたがって、$a > 0$ のとき $a + \\frac{1}{a} \\geqq 2$ が成り立つ。等号成立は $a = 1$ のとき。（証明終）"
+      }
+    ],
+    formulas: [
+      enrichFormulaWithCollection({
+        name: "相加平均・相乗平均の大小関係",
+        subject: "数学Ⅱ",
+        category: "式と証明",
+        desc: "$a > 0, b > 0$ のとき $\\frac{a+b}{2} \\geqq \\sqrt{ab}$（等号成立は $a=b$ のとき）。積が一定となる逆数型の最小値問題で極めて有効。"
+      })
+    ].filter(Boolean),
+    alternativeSolution: "【別解・差を取って平方完成する解法】\n\n(左辺) - (右辺) を計算して 0 以上になることを直接示します。\n$$a + \\frac{1}{a} - 2 = (\\sqrt{a})^2 - 2\\sqrt{a} \\cdot \\frac{1}{\\sqrt{a}} + \\left(\\frac{1}{\\sqrt{a}}\\right)^2 = \\left(\\sqrt{a} - \\frac{1}{\\sqrt{a}}\\right)^2$$\n実数の2乗は常に 0 以上であるため：\n$$\\left(\\sqrt{a} - \\frac{1}{\\sqrt{a}}\\right)^2 \\geqq 0 \\iff a + \\frac{1}{a} \\geqq 2$$\n等号が成り立つのは $\\sqrt{a} - \\frac{1}{\\sqrt{a}} = 0 \\iff \\sqrt{a} = \\frac{1}{\\sqrt{a}} \\iff a = 1$ のときです。\n相加相乗の公式を使わずとも、基本に立ち返って「差が 0 以上」を示す方針でも明快に解くことができます。",
+    similarProblems: [
+      {
+        title: "相加相乗平均の応用（2変数の最小値）",
+        question: "$x > 0, y > 0$ のとき、$(x + 2y)\\left(\\frac{2}{x} + \\frac{1}{y}\\right)$ の最小値を求めよ。",
+        hint: "【理解する】展開してから相加相乗平均を適用する方針を立てる。\n【集める】一度展開して定数項と逆数項を分ける。\n【形にする】$4 + 1 + \\frac{x}{y} + \\frac{4y}{x} = 5 + \\left(\\frac{x}{y} + \\frac{4y}{x}\\right)$。\n【動かす】$\\frac{x}{y} + \\frac{4y}{x} \\geqq 2\\sqrt{4} = 4$ より、最小値は $5 + 4 = 9$（等号成立は $x=2y$ のとき）。",
+        approach: "与式を展開すると：\n$$(x + 2y)\\left(\\frac{2}{x} + \\frac{1}{y}\\right) = 2 + \\frac{x}{y} + \\frac{4y}{x} + 2 = 4 + \\frac{x}{y} + \\frac{4y}{x}$$\n$x > 0, y > 0$ より $\\frac{x}{y} > 0, \\frac{4y}{x} > 0$ であるから、相加平均・相乗平均の関係より：\n$$\\frac{x}{y} + \\frac{4y}{x} \\geqq 2\\sqrt{\\frac{x}{y} \\cdot \\frac{4y}{x}} = 2\\sqrt{4} = 4$$\n両辺に 4 を加えて：\n$$4 + \\frac{x}{y} + \\frac{4y}{x} \\geqq 4 + 4 = 8$$\n等号成立は $\\frac{x}{y} = \\frac{4y}{x} \\iff x^2 = 4y^2 \\iff x = 2y$ のとき。\nしたがって、求める最小値は 8（$x = 2y$ のとき）である。"
+      },
+      {
+        title: "相加相乗平均を用いた分数関数の最大・最小",
+        question: "$x > 1$ のとき、$x + \\frac{4}{x-1}$ の最小値と、そのときの $x$ の値を求めよ。",
+        hint: "【理解する】分母 $x-1$ に合わせて分子・手前の項を変形する。\n【集める】$x-1 > 0$ に着目し、$x = (x-1) + 1$ と変形する。\n【形にする】$(x-1) + \\frac{4}{x-1} + 1$ とし、相加相乗平均を適用できる形を整える。\n【動かす】$(x-1) + \\frac{4}{x-1} \\geqq 2\\sqrt{4} = 4$ より、最小値は $4 + 1 = 5$（等号成立は $x-1=2 \\implies x=3$）。",
+        approach: "$x > 1$ より $x-1 > 0$ である。\n式を $(x-1)$ が現れるように変形する：\n$$x + \\frac{4}{x-1} = (x-1) + \\frac{4}{x-1} + 1$$\n$x-1 > 0, \\frac{4}{x-1} > 0$ であるから、相加平均・相乗平均の関係より：\n$$(x-1) + \\frac{4}{x-1} \\geqq 2\\sqrt{(x-1) \\cdot \\frac{4}{x-1}} = 2\\sqrt{4} = 4$$\n各辺に 1 を加えると：\n$$(x-1) + \\frac{4}{x-1} + 1 \\geqq 4 + 1 = 5$$\n等号成立は $x-1 = \\frac{4}{x-1} \\iff (x-1)^2 = 4$。$x > 1$ より $x - 1 = 2 \\iff x = 3$ のとき。\nしたがって、$x = 3$ のとき最小値 5 をとる。"
+      }
+    ]
+  },
+  {
+    id: 2,
     title: "整数と素数に関する証明",
-    university: "京都大学 改題",
+    university: "京都大学 2011年 改題",
     difficulty: "難関",
+    folder: "整数",
     isSample: true,
     goal: "$n$ が素数であることを背理法で証明する（合成数 $n=ab$ とおいて矛盾を導く）",
     question: "$n$ を $2$ 以上の自然数とする。$2^n - 1$ が素数であるとき、$n$ も素数であることを証明せよ。",
@@ -211,25 +294,25 @@ const initialProblems = [
       {
         step: 1,
         title: "手順1：何を求めるのかを明確に把握する",
-        badge: "【理解する】最終目的の言語化と方向性",
+        badge: "【理解する】問題の前提・制約・求めるゴールを把握する",
         content: "【求めるべき結論（ゴール）】\n「$n$ が素数であること」を証明する。\n\n【目指す解法のベクトル】\n「$n$ は素数である」を直接示すのは難しいため、対偶または背理法を用い、『$n$ が合成数 ($n=ab$) であると仮定したとき、$2^n-1$ が合成数になってしまい【仮定：$2^n-1$ は素数】に矛盾する』というゴールを目指して数式を変形していく。"
       },
       {
         step: 2,
         title: "手順2：問題文で与えられたすべての条件を整理する",
-        badge: "【集める】前提・数値・制約の箇条書き",
-        content: "ゴール（矛盾の導出）に向けて、使える手札（前提条件）を整理する。\n・条件①：$2^n - 1$ は素数である（崩してはいけない前提）\n・否定仮定：$n$ は合成数である（$\\exists a, b \\in \\mathbb{N}, 1 < a < n, 1 < b < n$ を満たし $n = ab$ とおける）"
+        badge: "【集める】与えられた条件・性質・使える公式を洗い出す",
+        content: "ゴール（矛盾の導出）に向けて、使える手札（前提条件）を整理する。\n・条件①：$2^n - 1$ は素数である（崩してはいけない前提）\n・否定仮定：$n$ は合成数である（ある自然数 $a, b$ ($1 < a < n, 1 < b < n$) が存在して $n = ab$ と書ける）"
       },
       {
         step: 3,
         title: "手順3：その条件を数式に変換する",
-        badge: "【形にする】文字設定と条件の定式化",
+        badge: "【形にする】条件を数式・図・座標・方程式へ翻訳する",
         content: "【変形の目的】$2^n - 1$ が合成数（1とそれ自身以外の約数を持つ）であることを示す式へ変換する。\n\n$n = ab$ を $2^n - 1$ に代入：\n$$2^n - 1 = 2^{ab} - 1 = (2^a)^b - 1$$\nここで $X = 2^a$ とおくと、$X^b - 1$ という代数式に帰着できる。"
       },
       {
         step: 4,
         title: "手順4：整理した式を解答の方向へ変形する",
-        badge: "【動かす】ゴール達成への式変形・結論",
+        badge: "【動かす】計算・論理展開を実行し、吟味・検算して結論を導く",
         content: "【ゴール直前の変形】因数分解公式 $$X^b - 1 = (X - 1)(X^{b-1} + X^{b-2} + \\dots + 1)$$ を適用する。\n$$2^n - 1 = (2^a - 1)(2^{a(b-1)} + \\dots + 1)$$\n$1 < a < n$ より $1 < 2^a - 1 < 2^n - 1$ となり、$2^n - 1$ は $2^a - 1$ という1より大きい約数を持つ。これは「$2^n - 1$ が素数である」という条件①に矛盾する。\nよって、$n$ は素数である。（証明終）"
       }
     ],
@@ -338,7 +421,8 @@ function FourmulaStepsAppInner() {
   const [selectedProblemId, setSelectedProblemId] = useState(1);
   const [openStep, setOpenStep] = useState(1);
   const [showAlt, setShowAlt] = useState(false);
-  const [openSimilarProblems, setOpenSimilarProblems] = useState([]);
+  const [openSimilarHints, setOpenSimilarHints] = useState([]);
+  const [openSimilarAnswers, setOpenSimilarAnswers] = useState([]);
   const [inputMode, setInputMode] = useState('image');
   const [inputText, setInputText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -998,11 +1082,16 @@ function FourmulaStepsAppInner() {
 
 
       const newId = Date.now();
+      const enrichedFormulas = (data.formulas && Array.isArray(data.formulas) && data.formulas.length > 0)
+        ? data.formulas.map(enrichFormulaWithCollection).filter(Boolean)
+        : [];
+
       const newProblem = {
         id: newId,
         title: data.title || "AI解析問題",
         university: "ユーザー解析問題",
         difficulty: "AI解析",
+        folder: detectMathFolder(data, enrichedFormulas),
         goal: data.goalSummary || "問題の最終目的の解明",
         question: data.questionText || inputText || "（画像の解法）",
         imageUrl: selectedImage,
@@ -1010,31 +1099,29 @@ function FourmulaStepsAppInner() {
           { 
             step: 1, 
             title: "手順1：何を求めるのかを明確に把握する", 
-            badge: "【理解する】最終目的の言語化と方向性", 
+            badge: "【理解する】問題の前提・制約・求めるゴールを把握する", 
             content: data.step1 || "" 
           },
           { 
             step: 2, 
             title: "手順2：問題文で与えられたすべての条件を整理する", 
-            badge: "【集める】前提・数値・制約の箇条書き", 
+            badge: "【集める】与えられた条件・性質・使える公式を洗い出す", 
             content: data.step2 || "" 
           },
           { 
             step: 3, 
             title: "手順3：その条件を数式に変換する", 
-            badge: "【形にする】文字設定と条件の定式化", 
+            badge: "【形にする】条件を数式・図・座標・方程式へ翻訳する", 
             content: data.step3 || "" 
           },
           { 
             step: 4, 
             title: "手順4：整理した式を解答の方向へ変形する", 
-            badge: "【動かす】ゴール達成に向けた式変形・結論", 
+            badge: "【動かす】計算・論理展開を実行し、吟味・検算して結論を導く", 
             content: data.step4 || "" 
           }
         ],
-        formulas: (data.formulas && Array.isArray(data.formulas) && data.formulas.length > 0)
-          ? data.formulas.map(enrichFormulaWithCollection).filter(Boolean)
-          : [],
+        formulas: enrichedFormulas,
         alternativeSolution: data.alternative || "別解なし",
         similarProblems: finalSimilarProblems
       };
@@ -1182,11 +1269,11 @@ function FourmulaStepsAppInner() {
   return (
     <div className="min-h-screen bg-[#FBF9F4] text-slate-800 font-sans pb-24">
       {/* アプリトップヘッダー（LPと明確に識別できるスレートネイビーのツールバー） */}
-      <header className="bg-slate-900 text-white border-b border-slate-800 shadow-md mb-6">
-        <div className="max-w-5xl mx-auto px-4 py-3 sm:py-4 space-y-3">
+      <header className="bg-slate-900 text-white border-b border-slate-800 shadow-md mb-4 sm:mb-6 sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2 sm:py-3 space-y-2 sm:space-y-3">
           {/* 上段: ロゴ・LP戻るボタン & ユーザー情報 */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <button
                 onClick={() => {
                   setViewMode('lp');
@@ -1195,52 +1282,53 @@ function FourmulaStepsAppInner() {
                     window.scrollTo(0, 0);
                   }
                 }}
-                className="px-3 py-1.5 text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
+                className="px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1 shadow-2xs shrink-0 cursor-pointer"
                 title="公式紹介LPページへ戻る"
               >
                 <span>←</span>
-                <span>公式LPへ</span>
+                <span className="hidden sm:inline">公式LPへ</span>
+                <span className="sm:hidden">LP</span>
               </button>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="bg-[#D9532F] text-white font-black px-2 py-0.5 rounded text-xs sm:text-sm tracking-wider shrink-0">4STEPS</span>
-                  <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight shrink-0">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="bg-[#D9532F] text-white font-black px-1.5 py-0.5 rounded text-[10px] sm:text-xs tracking-wider shrink-0">4STEPS</span>
+                  <h1 className="text-base sm:text-xl font-black text-white tracking-tight shrink-0">
                     fourmulasteps
                   </h1>
                   {isSupabaseConfigured && (
                     <span 
                       title="学習履歴や登録問題が安全にクラウドへ自動保存されています"
-                      className="text-[10px] text-emerald-300 bg-emerald-950/80 border border-emerald-700/60 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 font-medium shrink-0 whitespace-nowrap cursor-help"
+                      className="hidden sm:inline-flex text-[10px] text-emerald-300 bg-emerald-950/80 border border-emerald-700/60 px-2 py-0.5 rounded-full items-center gap-1 font-medium shrink-0 whitespace-nowrap cursor-help"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       クラウド同期中
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">高校数学 4ステップ思考法プラットフォーム（初見問題が解ける再現プロセス）</p>
+                <p className="hidden md:block text-[11px] text-slate-400 mt-0.5">高校数学 4ステップ思考法プラットフォーム（初見問題が解ける再現プロセス）</p>
               </div>
             </div>
 
             {/* ログインユーザー情報・ログアウト */}
             {currentUser?.email ? (
-              <div className="flex items-center gap-2 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-2xs">
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-800/90 border border-slate-700 px-2.5 py-1 rounded-xl text-xs shrink-0 whitespace-nowrap shadow-2xs">
                 <button
                   onClick={() => setActiveTab('mypage')}
-                  className="flex items-center gap-2 text-left hover:opacity-80 transition cursor-pointer"
+                  className="flex items-center gap-1.5 text-left hover:opacity-80 transition cursor-pointer"
                   title="マイページを開く"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-                  <span className="text-slate-200 font-semibold max-w-[140px] sm:max-w-[200px] truncate">
+                  <span className="text-slate-200 font-semibold max-w-[80px] sm:max-w-[160px] truncate text-xs">
                     {currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]}
                   </span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 border ${
+                  <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 border ${
                     userProfile?.plan === 'premium' 
                       ? 'bg-orange-500/20 text-orange-300 border-orange-500/40' 
                       : userProfile?.plan === 'standard' 
                       ? 'bg-slate-700 text-slate-200 border-slate-600' 
                       : 'bg-slate-700/80 text-slate-300 border-slate-600'
                   }`}>
-                    {userProfile?.plan === 'premium' ? 'プレミアム会員' : userProfile?.plan === 'standard' ? '一般会員' : '無料体験会員'}
+                    {userProfile?.plan === 'premium' ? 'プレミアム' : userProfile?.plan === 'standard' ? '一般' : '無料'}
                   </span>
                 </button>
                 <button
@@ -1251,7 +1339,7 @@ function FourmulaStepsAppInner() {
                     setViewMode('lp');
                   }}
                   title="ログアウトしてLPに戻る"
-                  className="text-slate-400 hover:text-rose-400 p-1 ml-0.5 rounded hover:bg-slate-700/60 transition cursor-pointer"
+                  className="text-slate-400 hover:text-rose-400 p-1 rounded hover:bg-slate-700/60 transition cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -1259,61 +1347,61 @@ function FourmulaStepsAppInner() {
             ) : null}
           </div>
 
-          {/* 下段: ナビゲーションタブ */}
-          <div className="flex items-center justify-between bg-slate-800/90 p-1.5 rounded-xl border border-slate-700/80 text-xs sm:text-sm flex-wrap gap-1.5 shadow-inner">
-            <div className="flex items-center gap-1 flex-wrap">
+          {/* 下段: ナビゲーションタブ（スマホでも1行で横スクロール可能に最適化） */}
+          <div className="flex items-center justify-between bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 text-xs sm:text-sm gap-1.5 shadow-inner overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => setActiveTab('solve')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap text-xs sm:text-sm ${
                   activeTab === 'solve' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                 }`}
               >
-                <BookOpen className="w-4 h-4" />
-                演習・解説
+                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>演習・解説</span>
               </button>
               <button
                 onClick={() => setActiveTab('similar')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
-                  activeTab === 'similar' ? 'bg-emerald-500 text-white font-bold shadow-xs' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40'
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap text-xs sm:text-sm ${
+                  activeTab === 'similar' ? 'bg-emerald-500 text-white font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                 }`}
               >
-                <Sparkles className="w-4 h-4" />
-                類似問題
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+                <span>類似問題</span>
               </button>
               <button
                 onClick={() => setActiveTab('formulas')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap text-xs sm:text-sm ${
                   activeTab === 'formulas' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                 }`}
               >
-                <Library className="w-4 h-4 text-slate-400" />
-                公式集 ({MATH_FORMULAS.length})
+                <Library className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+                <span>公式集</span>
               </button>
               <button
                 onClick={() => setActiveTab('analysis')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap text-xs sm:text-sm ${
                   activeTab === 'analysis' ? 'bg-white text-slate-900 font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                 }`}
               >
-                <BarChart2 className="w-4 h-4 text-slate-400" />
-                弱点分析
+                <BarChart2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+                <span>弱点分析</span>
               </button>
               <button
                 onClick={() => setActiveTab('mypage')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-medium transition cursor-pointer whitespace-nowrap text-xs sm:text-sm ${
                   activeTab === 'mypage' ? 'bg-[#D9532F] text-white font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
                 }`}
               >
-                <User className="w-4 h-4 text-orange-200" />
-                マイページ
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-200" />
+                <span>マイページ</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0 ml-auto">
               <button
                 type="button"
                 onClick={() => setShowOnboarding(true)}
-                className="text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-700 hover:bg-slate-700/60 transition flex items-center gap-1 cursor-pointer"
+                className="text-xs text-slate-300 hover:text-white px-2 py-1.5 rounded-lg border border-slate-700 hover:bg-slate-700/60 transition flex items-center gap-1 cursor-pointer whitespace-nowrap"
                 title="使い方スタートガイドを表示"
               >
                 <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
@@ -1324,14 +1412,14 @@ function FourmulaStepsAppInner() {
                 onClick={() => {
                   setActiveTab('scan');
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs whitespace-nowrap ${
                   activeTab === 'scan'
-                    ? 'bg-[#C84826] text-white ring-2 ring-orange-200'
-                    : 'bg-[#D9532F] hover:bg-[#C84826] text-white shadow'
+                    ? 'bg-[#C84826] text-white ring-2 ring-orange-200 shadow-sm'
+                    : 'bg-[#D9532F] hover:bg-[#C84826] text-white'
                 }`}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
-                <span>新しい問題を解析</span>
+                <span>問題解析</span>
               </button>
             </div>
           </div>
@@ -1602,8 +1690,9 @@ function FourmulaStepsAppInner() {
 
                             {/* 自力再現・つまずき3択チェッカー */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3 gap-2.5 border-t border-[#EBE4D8]">
-                              <span className="text-xs text-slate-600 font-medium">
-                                このステップの自力再現度：
+                              <span className="text-xs text-slate-700 font-bold flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5 text-[#D9532F]" />
+                                このステップの自力達成度（弱点分析に反映）：
                               </span>
                               <div className="flex items-center gap-2 flex-wrap">
                                 <button
@@ -1755,7 +1844,8 @@ function FourmulaStepsAppInner() {
                         );
                       }
 
-                      const isOpen = openSimilarProblems.includes(idx);
+                      const isHintOpen = openSimilarHints.includes(idx);
+                      const isAnswerOpen = openSimilarAnswers.includes(idx);
                       return (
                         <div key={idx} className="bg-[#FAF9F5] border border-slate-200 rounded-xl p-5 space-y-3.5 transition shadow-2xs">
                           <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -1772,21 +1862,49 @@ function FourmulaStepsAppInner() {
                             <MathText text={sim.question} />
                           </div>
 
-                          {/* アクションボタン */}
-                          <div className="pt-1 flex items-center justify-between gap-3 flex-wrap">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setOpenSimilarProblems(prev =>
-                                  prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-                                );
-                              }}
-                              className="text-xs text-slate-700 hover:text-slate-900 flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs"
-                            >
-                              <Lightbulb className="w-4 h-4 text-amber-500" />
-                              <span>{isOpen ? '思考ヒント・解法要点を閉じる' : '思考ヒント・解法要点を見る'}</span>
-                              {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                            </button>
+                          {/* アクションボタン群（ヒント・解答・AI解析） */}
+                          <div className="pt-1 flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {sim.hint && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenSimilarHints(prev =>
+                                      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+                                    );
+                                  }}
+                                  className={`text-xs flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg border shadow-2xs ${
+                                    isHintOpen
+                                      ? 'bg-amber-100 border-amber-300 text-amber-900 font-bold'
+                                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                                  <span>{isHintOpen ? 'ヒントを閉じる' : '思考ヒントを見る'}</span>
+                                  {isHintOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                </button>
+                              )}
+
+                              {sim.approach && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenSimilarAnswers(prev =>
+                                      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+                                    );
+                                  }}
+                                  className={`text-xs flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg border shadow-2xs ${
+                                    isAnswerOpen
+                                      ? 'bg-emerald-100 border-emerald-300 text-emerald-900 font-bold'
+                                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>{isAnswerOpen ? '解説を閉じる' : '略解・解説を見る'}</span>
+                                  {isAnswerOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                                </button>
+                              )}
+                            </div>
 
                             <button
                               type="button"
@@ -1795,7 +1913,7 @@ function FourmulaStepsAppInner() {
                                 setInputMode('text');
                                 setActiveTab('scan');
                               }}
-                              className="text-xs text-[#D9532F] hover:text-[#C84826] flex items-center gap-1.5 font-bold bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                              className="text-xs text-[#D9532F] hover:text-[#C84826] flex items-center gap-1.5 font-bold bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg transition cursor-pointer ml-auto"
                               title="この類題をAI解析に送ってfourmulastepsで分解する"
                             >
                               <Sparkles className="w-3.5 h-3.5 text-[#D9532F]" />
@@ -1803,30 +1921,29 @@ function FourmulaStepsAppInner() {
                             </button>
                           </div>
 
-                          {isOpen && (
-                            <div className="space-y-3 pt-3 border-t border-slate-200 text-xs">
-                              {sim.hint && (
-                                <div className="bg-orange-50/60 p-4 rounded-xl border border-orange-200/80 text-slate-800 leading-relaxed">
-                                  <div className="font-bold text-[#D9532F] mb-1.5 flex items-center gap-1.5 text-xs">
-                                    <Target className="w-4 h-4 text-[#D9532F]" />
-                                    fourmulasteps 着眼点（思考ヒント）
-                                  </div>
-                                  <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
-                                    <MathText text={sim.hint} />
-                                  </div>
-                                </div>
-                              )}
-                              {sim.approach && (
-                                <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 text-slate-800 leading-relaxed">
-                                  <div className="font-bold text-emerald-800 mb-1.5 flex items-center gap-1.5 text-xs">
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                    解法の要点・略解
-                                  </div>
-                                  <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
-                                    <MathText text={sim.approach} />
-                                  </div>
-                                </div>
-                              )}
+                          {/* ヒントアコーディオン */}
+                          {isHintOpen && sim.hint && (
+                            <div className="bg-orange-50/70 p-4 rounded-xl border border-orange-200 text-slate-800 leading-relaxed text-xs animate-in fade-in duration-150">
+                              <div className="font-bold text-[#D9532F] mb-1.5 flex items-center gap-1.5 text-xs">
+                                <Target className="w-4 h-4 text-[#D9532F]" />
+                                fourmulasteps 着眼点（思考ヒント）
+                              </div>
+                              <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
+                                <MathText text={sim.hint} />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 解答・解説アコーディオン */}
+                          {isAnswerOpen && sim.approach && (
+                            <div className="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-slate-800 leading-relaxed text-xs animate-in fade-in duration-150">
+                              <div className="font-bold text-emerald-800 mb-1.5 flex items-center gap-1.5 text-xs">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                解法の要点・略解
+                              </div>
+                              <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
+                                <MathText text={sim.approach} />
+                              </div>
                             </div>
                           )}
                         </div>
@@ -2125,7 +2242,8 @@ function FourmulaStepsAppInner() {
                       );
                     }
 
-                    const isOpen = openSimilarProblems.includes(idx);
+                    const isHintOpen = openSimilarHints.includes(idx);
+                    const isAnswerOpen = openSimilarAnswers.includes(idx);
                     return (
                       <div key={idx} className="bg-[#FAF9F5] border border-slate-200 rounded-xl p-6 space-y-4 shadow-2xs">
                         <div className="flex items-center justify-between gap-2 flex-wrap border-b border-slate-200 pb-3">
@@ -2155,19 +2273,47 @@ function FourmulaStepsAppInner() {
 
                         {/* トグルとAI解析ボタン */}
                         <div className="pt-1 flex items-center justify-between gap-3 flex-wrap">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOpenSimilarProblems(prev =>
-                                prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-                              );
-                            }}
-                            className="text-xs text-slate-700 hover:text-slate-900 flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs"
-                          >
-                            <Lightbulb className="w-4 h-4 text-amber-500" />
-                            <span>{isOpen ? '思考ヒント・解法要点を閉じる' : '思考ヒント・解法要点を見る'}</span>
-                            {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                          </button>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {sim.hint && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpenSimilarHints(prev =>
+                                    prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+                                  );
+                                }}
+                                className={`text-xs flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg border shadow-2xs ${
+                                  isHintOpen
+                                    ? 'bg-amber-100 border-amber-300 text-amber-900 font-bold'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                                <span>{isHintOpen ? '思考ヒントを閉じる' : '思考ヒントを見る'}</span>
+                                {isHintOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+
+                            {sim.approach && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpenSimilarAnswers(prev =>
+                                    prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+                                  );
+                                }}
+                                className={`text-xs flex items-center gap-1.5 font-medium transition cursor-pointer py-1.5 px-3 rounded-lg border shadow-2xs ${
+                                  isAnswerOpen
+                                    ? 'bg-emerald-100 border-emerald-300 text-emerald-900 font-bold'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>{isAnswerOpen ? '解説を閉じる' : '略解・解説を見る'}</span>
+                                {isAnswerOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                          </div>
 
                           <button
                             type="button"
@@ -2176,7 +2322,7 @@ function FourmulaStepsAppInner() {
                               setInputMode('text');
                               setActiveTab('scan');
                             }}
-                            className="text-xs text-[#D9532F] hover:text-[#C84826] flex items-center gap-1.5 font-bold bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                            className="text-xs text-[#D9532F] hover:text-[#C84826] flex items-center gap-1.5 font-bold bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg transition cursor-pointer ml-auto"
                             title="この類題をAI解析に送ってfourmulastepsで分解する"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-[#D9532F]" />
@@ -2184,30 +2330,29 @@ function FourmulaStepsAppInner() {
                           </button>
                         </div>
 
-                        {isOpen && (
-                          <div className="space-y-4 pt-3 border-t border-slate-200 text-xs">
-                            {sim.hint && (
-                              <div className="bg-orange-50/60 p-4 rounded-xl border border-orange-200/80 text-slate-800 leading-relaxed">
-                                <div className="font-bold text-[#D9532F] mb-2 flex items-center gap-1.5 text-xs">
-                                  <Target className="w-4 h-4 text-[#D9532F]" />
-                                  fourmulasteps 着眼点（思考ヒント）
-                                </div>
-                                <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
-                                  <MathText text={sim.hint} />
-                                </div>
-                              </div>
-                            )}
-                            {sim.approach && (
-                              <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 text-slate-800 leading-relaxed">
-                                <div className="font-bold text-emerald-800 mb-2 flex items-center gap-1.5 text-xs">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                                  解法の要点・略解
-                                </div>
-                                <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
-                                  <MathText text={sim.approach} />
-                                </div>
-                              </div>
-                            )}
+                        {/* ヒントアコーディオン */}
+                        {isHintOpen && sim.hint && (
+                          <div className="bg-orange-50/70 p-4 rounded-xl border border-orange-200 text-slate-800 leading-relaxed text-xs animate-in fade-in duration-150">
+                            <div className="font-bold text-[#D9532F] mb-1.5 flex items-center gap-1.5 text-xs">
+                              <Target className="w-4 h-4 text-[#D9532F]" />
+                              fourmulasteps 着眼点（思考ヒント）
+                            </div>
+                            <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
+                              <MathText text={sim.hint} />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 解答・解説アコーディオン */}
+                        {isAnswerOpen && sim.approach && (
+                          <div className="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-slate-800 leading-relaxed text-xs animate-in fade-in duration-150">
+                            <div className="font-bold text-emerald-800 mb-1.5 flex items-center gap-1.5 text-xs">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                              解法の要点・略解
+                            </div>
+                            <div className="whitespace-pre-line text-xs font-sans leading-relaxed text-slate-700">
+                              <MathText text={sim.approach} />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -2276,6 +2421,7 @@ function FourmulaStepsAppInner() {
                     { id: '数学Ⅱ', label: `数学Ⅱ (${MATH_FORMULAS.filter(f => f.subject === '数学Ⅱ').length})` },
                     { id: '数学B', label: `数学B (${MATH_FORMULAS.filter(f => f.subject === '数学B').length})` },
                     { id: '数学Ⅲ', label: `数学Ⅲ (${MATH_FORMULAS.filter(f => f.subject === '数学Ⅲ').length})` },
+                    { id: '数学C', label: `数学C (${MATH_FORMULAS.filter(f => f.subject === '数学C').length})` },
                   ].map((sub) => (
                     <button
                       key={sub.id}
@@ -2429,6 +2575,21 @@ function FourmulaStepsAppInner() {
                   「知識（公式）」と「解答を組み立てる手順」は別物です。
                   4つの手順（理解する→集める→形にする→動かす）のどこで思考が止まっているかを可視化し、弱点を克服して再現可能な解答力を養います。
                 </p>
+
+                {totalPracticed < 3 && (
+                  <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-xs flex items-start gap-3">
+                    <Sparkles className="w-5 h-5 text-[#D9532F] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-slate-900">
+                        あと {Math.max(1, 3 - totalPracticed)} ステップ記録すると、あなたの弱点パターンを自動分析できます
+                      </div>
+                      <p className="text-slate-600 mt-0.5 leading-relaxed">
+                        問題のステップ解説下部にある「自力でできた / ヒントを見て解けた / つまずいた」を記録すると、
+                        あなたが「問題理解」「条件整理」「定式化」「計算変形」のどこで止まりやすいかの傾向を自動診断します。
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-6">
                   {[
@@ -2864,11 +3025,16 @@ function FourmulaStepsAppInner() {
         <AuthModal
           isOpen={showUpgradeModal}
           initialMode="checkout"
+          selectedPlan={upgradeTargetPlan}
           targetPlan={upgradeTargetPlan}
+          currentUser={currentUser}
           onClose={() => setShowUpgradeModal(false)}
-          onSuccess={(newPlan) => {
+          onSuccess={(authUser, chosenPlan) => {
             setShowUpgradeModal(false);
-            setUserProfile(prev => ({ ...(prev || {}), plan: newPlan }));
+            if (authUser) setCurrentUser(authUser);
+            if (chosenPlan?.tier) {
+              setUserProfile(prev => ({ ...(prev || {}), plan: chosenPlan.tier }));
+            }
           }}
         />
 

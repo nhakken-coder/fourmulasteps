@@ -1203,8 +1203,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_134",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "ベクトルの加法の性質",
     "latex": "\\vec{a}+\\vec{b}=\\vec{b}+\\vec{a}, \\qquad (\\vec{a}+\\vec{b})+\\vec{c}=\\vec{a}+(\\vec{b}+\\vec{c})",
     "summary": "実数の加法と同様、交換法則・結合法則が成り立つ。零ベクトルと逆ベクトルの性質も基本。",
@@ -1212,8 +1211,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_135",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "ベクトルの実数倍の性質",
     "latex": "k(l\\vec{a})=(kl)\\vec{a}, \\qquad (k+l)\\vec{a}=k\\vec{a}+l\\vec{a}, \\qquad k(\\vec{a}+\\vec{b})=k\\vec{a}+k\\vec{b}",
     "summary": "スカラー倍に関する結合則・分配則。",
@@ -1221,8 +1219,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_136",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "ベクトルの平行条件",
     "latex": "\\vec{a}\\neq\\vec{0},\\ \\vec{b}\\neq\\vec{0}\\ のとき \\quad \\vec{a}\\parallel\\vec{b} \\iff \\vec{b}=k\\vec{a}\\ (k\\text{は実数})",
     "summary": "2つのベクトルが平行であることを表す条件。成分がわかっているときは、たすき掛けした差が0になることで判定できる。",
@@ -1230,8 +1227,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_137",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "一次独立なベクトルによる分解の一意性",
     "latex": "\\vec{a},\\vec{b}\\ が非零・非平行のとき \\quad \\vec{p}=s\\vec{a}+t\\vec{b}\\ (s,t\\text{は一意})",
     "summary": "零ベクトルでなく互いに平行でない2つのベクトルを使うと、平面上の任意のベクトルはただ一通りに表せる。",
@@ -1239,8 +1235,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_138",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "成分表示による演算",
     "latex": "\\vec{a}=(a_1,a_2),\\ \\vec{b}=(b_1,b_2)\\ のとき",
     "summary": "座標(成分)で与えられたベクトルの和・差・実数倍の計算法。",
@@ -1248,8 +1243,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_139",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "ベクトルの大きさ",
     "latex": "|\\vec{a}|=\\sqrt{a_1^2+a_2^2}, \\qquad |\\overrightarrow{AB}|=\\sqrt{(b_1-a_1)^2+(b_2-a_2)^2}",
     "summary": "成分から大きさ(長さ)を求める公式。2点間の距離公式のベクトル版でもある。",
@@ -1257,8 +1251,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_140",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "内積の定義",
     "latex": "\\vec{a}\\cdot\\vec{b}=|\\vec{a}||\\vec{b}|\\cos\\theta \\qquad (\\vec{a},\\vec{b}\\neq\\vec{0})",
     "summary": "2つのベクトルのなす角 $\\theta$ を使った内積の定義。図形的な意味(一方をもう一方の方向に射影した長さの積)を持つ。",
@@ -1266,8 +1259,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_141",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "内積の成分表示",
     "latex": "\\vec{a}=(a_1,a_2),\\ \\vec{b}=(b_1,b_2)\\ のとき \\quad \\vec{a}\\cdot\\vec{b}=a_1b_1+a_2b_2",
     "summary": "角度を使わず、成分だけから内積を計算できる公式。平面・空間どちらでも同じ形になる。",
@@ -1275,8 +1267,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_142",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "なす角の公式",
     "latex": "\\cos\\theta = \\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{a}||\\vec{b}|} \\qquad (0^\\circ\\leq\\theta\\leq180^\\circ,\\ \\vec{a},\\vec{b}\\neq\\vec{0})",
     "summary": "内積の定義式を $\\cos\\theta$ について解いたもの。",
@@ -1284,8 +1275,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_143",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "垂直条件・平行条件(内積による表現)",
     "latex": "\\vec{a}\\perp\\vec{b} \\iff \\vec{a}\\cdot\\vec{b}=0",
     "summary": "$\\cos\\theta=0$ なら垂直、$\\cos\\theta=\\pm1$ なら平行という関係を使った判定条件。",
@@ -1293,8 +1283,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_144",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "内積の演算法則",
     "latex": "\\vec{a}\\cdot\\vec{b}=\\vec{b}\\cdot\\vec{a}, \\qquad (\\vec{a}+\\vec{b})\\cdot\\vec{c}=\\vec{a}\\cdot\\vec{c}+\\vec{b}\\cdot\\vec{c}, \\qquad (k\\vec{a})\\cdot\\vec{b}=\\vec{a}\\cdot(k\\vec{b})=k(\\vec{a}\\cdot\\vec{b})",
     "summary": "内積の交換法則・分配法則・スカラー倍。実数の掛け算に近い感覚で計算できる。",
@@ -1302,8 +1291,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_145",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "内積と大きさの関係・内積の不等式",
     "latex": "\\vec{a}\\cdot\\vec{a}=|\\vec{a}|^2, \\qquad -|\\vec{a}||\\vec{b}|\\leq\\vec{a}\\cdot\\vec{b}\\leq|\\vec{a}||\\vec{b}|",
     "summary": "自分自身との内積が大きさの2乗になる関係と、内積が取りうる値の範囲(コーシー・シュワルツの不等式に相当)。",
@@ -1311,8 +1299,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_146",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "三角形の面積公式(ベクトル)",
     "latex": "S=\\frac{1}{2}\\sqrt{|\\vec{a}|^2|\\vec{b}|^2-(\\vec{a}\\cdot\\vec{b})^2}",
     "summary": "$\\triangle OAB$ で $\\overrightarrow{OA}=\\vec{a},\\ \\overrightarrow{OB}=\\vec{b}$ とするとき、三角比を使わずに内積だけで面積を求める公式。成分がわかれば、たすき掛けの絶対値の半分としても求まる。",
@@ -1320,8 +1307,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_147",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "内分点の位置ベクトル",
     "latex": "\\vec{p}=\\frac{n\\vec{a}+m\\vec{b}}{m+n}",
     "summary": "線分ABを $m:n$ に内分する点Pの位置ベクトル。",
@@ -1329,8 +1315,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_148",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "外分点の位置ベクトル",
     "latex": "\\vec{q}=\\frac{-n\\vec{a}+m\\vec{b}}{m-n} \\qquad (m\\neq n)",
     "summary": "線分ABを $m:n$ に外分する点Qの位置ベクトル。$m=n$ のときは外分点が存在しない($m\\neq n$ が条件)。",
@@ -1338,8 +1323,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_149",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "重心の位置ベクトル",
     "latex": "\\vec{g}=\\frac{\\vec{a}+\\vec{b}+\\vec{c}}{3}",
     "summary": "$\\triangle ABC$ の3頂点の位置ベクトルの平均が、重心の位置ベクトルになる。",
@@ -1347,8 +1331,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_150",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "直線のベクトル方程式",
     "latex": "\\vec{p}=\\vec{a}+t\\vec{d}",
     "summary": "直線を「通る点」と「方向」または「法線」で表す3通りの表し方。",
@@ -1356,8 +1339,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_151",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "ベクトルの終点の存在範囲",
     "latex": "",
     "summary": "$\\vec{p}=s\\vec{a}+t\\vec{b}$ の $s,t$ に条件を付けたときに、点Pが描く図形。図形問題の頻出パターン。",
@@ -1365,8 +1347,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_152",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "円のベクトル方程式",
     "latex": "中心C(\\vec{c}),\\ 半径r:\\qquad |\\vec{p}-\\vec{c}|=r \\quad または \\quad (\\vec{p}-\\vec{c})\\cdot(\\vec{p}-\\vec{c})=r^2",
     "summary": "中心と半径による表し方、および直径の両端を使った表し方(直径に対する円周角が直角であることに対応)。",
@@ -1662,8 +1643,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_185",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "虚数単位と複素数の定義",
     "latex": "i^2=-1,\\qquad \\alpha=a+bi\\ \\longleftrightarrow\\ \\mathrm{A}(a,b)",
     "summary": "虚数単位 $i$ は2乗すると $-1$ になる数として定義され、複素数は実数 $a,b$ を用いて $a+bi$ の形で表される。複素数平面では複素数 $\\alpha=a+bi$ を点 $\\mathrm{A}(a,b)$ に対応させる。",
@@ -1671,8 +1651,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_186",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "3点の共線条件(原点を含む場合)",
     "latex": "\\mathrm O,\\ \\alpha,\\ \\beta\\ \\text{が同一直線上}\\iff \\beta=k\\alpha\\ (k\\ \\text{は実数})",
     "summary": "原点 $\\mathrm O$、点 $\\alpha$、点 $\\beta$($\\alpha\\neq0$)が一直線上にあるための条件は、$\\beta$ が $\\alpha$ の実数倍で表されることである。",
@@ -1680,8 +1659,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_187",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "複素数の和・差",
     "latex": "\\alpha+\\beta=(a+c)+(b+d)i,\\qquad \\alpha-\\beta=(a-c)+(b-d)i",
     "summary": "$\\alpha=a+bi,\\ \\beta=c+di$ のとき、和・差は実部・虚部をそれぞれ加減して求める(複素数平面上ではベクトルの和・差に対応)。",
@@ -1689,8 +1667,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_188",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "共役複素数の定義と性質",
     "latex": "\\alpha+\\bar\\alpha=2a\\ (\\text{実数}),\\quad \\overline{\\alpha\\pm\\beta}=\\bar\\alpha\\pm\\bar\\beta,\\quad \\overline{\\alpha\\beta}=\\bar\\alpha\\bar\\beta,\\quad \\overline{\\left(\\frac{\\alpha}{\\beta}\\right)}=\\frac{\\bar\\alpha}{\\bar\\beta}\\ (\\beta\\neq0),\\quad \\overline{\\bar\\alpha}=\\alpha",
     "summary": "$\\alpha=a+bi$ に対し共役複素数を $\\bar\\alpha=a-bi$ と定める。共役をとる操作は四則演算と両立し、次の性質が成り立つ。",
@@ -1698,8 +1675,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_189",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "複素数の絶対値",
     "latex": "|\\alpha|=|a+bi|=\\sqrt{a^2+b^2},\\qquad \\alpha\\bar\\alpha=|\\alpha|^2,\\qquad |\\alpha\\beta|=|\\alpha||\\beta|,\\qquad \\left|\\frac{\\alpha}{\\beta}\\right|=\\frac{|\\alpha|}{|\\beta|}",
     "summary": "$\\alpha=a+bi$ の絶対値は原点からの距離として定義され、$\\alpha\\bar\\alpha$ が絶対値の2乗に等しいという関係が頻繁に用いられる。",
@@ -1707,8 +1683,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_190",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "2点間の距離",
     "latex": "\\mathrm{AB}=|\\beta-\\alpha|",
     "summary": "複素数平面上の2点 $\\alpha,\\ \\beta$ 間の距離は、差の絶対値で与えられる。",
@@ -1716,8 +1691,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_191",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "複素数の極形式",
     "latex": "z=r(\\cos\\theta+i\\sin\\theta)\\qquad (0\\le\\theta<2\\pi\\ \\text{または}\\ -\\pi<\\theta\\le\\pi)",
     "summary": "複素数 $z$ を原点からの距離 $r=|z|$ と偏角 $\\theta=\\arg z$ を用いて表したものを極形式という。",
@@ -1725,8 +1699,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_192",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "極形式による積と商",
     "latex": "z_1z_2=r_1r_2\\{\\cos(\\theta_1+\\theta_2)+i\\sin(\\theta_1+\\theta_2)\\},\\qquad |z_1z_2|=r_1r_2,\\ \\ \\arg(z_1z_2)=\\theta_1+\\theta_2",
     "summary": "極形式で表された複素数どうしの積・商は、絶対値の積・商と偏角の和・差で計算できる。",
@@ -1734,8 +1707,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_193",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "ド・モアブルの定理",
     "latex": "(\\cos\\theta+i\\sin\\theta)^n=\\cos n\\theta+i\\sin n\\theta\\qquad (n\\ \\text{は整数})",
     "summary": "極形式で表された複素数の整数乗は、偏角を整数倍するだけで求まる。回転や累乗の計算に頻用される。",
@@ -1743,8 +1715,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_194",
-    "subject": "数学Ⅲ",
-    "category": "複素数平面",
+    "subject": "数学C",
     "name": "1の $n$ 乗根",
     "latex": "z_k=\\cos\\frac{2k\\pi}{n}+i\\sin\\frac{2k\\pi}{n}\\qquad (k=0,1,2,\\dots,n-1)",
     "summary": "方程式 $z^n=1$ の解は、単位円周上に等間隔に並ぶ $n$ 個の点(正 $n$ 角形の頂点)に対応する。",
@@ -1752,8 +1723,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_195",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "放物線",
     "latex": "y^2=4px\\qquad (p\\neq0)",
     "summary": "#### 放物線の標準形(軸がx軸)",
@@ -1761,8 +1731,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_196",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "楕円",
     "latex": "\\frac{x^2}{a^2}+\\frac{y^2}{b^2}=1\\quad(a>b>0),\\qquad c=\\sqrt{a^2-b^2},\\quad \\mathrm F(c,0),\\ \\mathrm F'(-c,0)",
     "summary": "#### 楕円の標準形と焦点(横長)",
@@ -1770,8 +1739,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_197",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "双曲線",
     "latex": "|\\mathrm{PF}-\\mathrm{PF'}|=\\text{一定}",
     "summary": "#### 双曲線の定義",
@@ -1779,8 +1747,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_198",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "離心率と2次曲線",
     "latex": "\\mathrm{PF}:\\mathrm{PH}=e:1\\qquad(e>0\\ \\text{は定数})",
     "summary": "#### 離心率の定義",
@@ -1788,8 +1755,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_199",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "極方程式",
     "latex": "x=r\\cos\\theta,\\quad y=r\\sin\\theta,\\qquad r=\\sqrt{x^2+y^2}\\ (r\\neq0)",
     "summary": "#### 直交座標と極座標の変換",
@@ -1797,8 +1763,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_200",
-    "subject": "数学Ⅲ",
-    "category": "2次曲線",
+    "subject": "数学C",
     "name": "媒介変数で表される曲線(サイクロイド系)",
     "latex": "x=a(\\theta-\\sin\\theta),\\qquad y=a(1-\\cos\\theta)",
     "summary": "#### サイクロイド",
@@ -1923,8 +1888,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_214",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "共面条件（点が同一平面上にある条件）",
     "latex": "\\overrightarrow{AP} = s\\overrightarrow{AB} + t\\overrightarrow{AC} \\quad または \\quad \\vec{p} = (1-s-t)\\vec{a} + s\\vec{b} + t\\vec{c}",
     "summary": "4点 $A, B, C, P$ が同一平面上にある（共面である）ための必要十分条件。基準点を平面上にとる1次結合表示と、外にとる係数の和が1となる表示がある。",
@@ -1932,8 +1896,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_215",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "空間ベクトルの一次独立と分解の一意性",
     "latex": "\\vec{p} = s\\vec{a} + t\\vec{b} + u\\vec{c} \\qquad (s, t, u \\text{ は一意の実数})",
     "summary": "同一平面上にない4点に対し、3つのベクトルは一次独立であり、空間内の任意のベクトルはただ一通りに表せる。",
@@ -1941,8 +1904,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_216",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "点と平面の距離公式（空間）",
     "latex": "d = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2 + b^2 + c^2}}",
     "summary": "点 $(x_0, y_0, z_0)$ と平面 $ax + by + cz + d = 0$ の距離を求める公式。四面体の高さ計算などに有効。",
@@ -1950,8 +1912,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_217",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "平面のベクトル方程式",
     "latex": "\\vec{n}\\cdot(\\vec{p}-\\vec{a})=0 \\qquad \\text{または} \\qquad ax+by+cz+d=0",
     "summary": "定点を通り法線ベクトルに垂直な平面の表し方。成分表示により $ax+by+cz+d=0$ となる。",
@@ -1959,8 +1920,7 @@ export const MATH_FORMULAS = [
   },
   {
     "id": "formula_218",
-    "subject": "数学B",
-    "category": "ベクトル",
+    "subject": "数学C",
     "name": "球面のベクトル方程式",
     "latex": "|\\vec{p}-\\vec{c}|=r \\qquad \\text{または} \\qquad (x-a)^2+(y-b)^2+(z-c)^2=r^2",
     "summary": "中心と半径による球面の表し方、および直径の両端を与えられた場合の表し方。",
